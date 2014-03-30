@@ -27,18 +27,25 @@
     color: rgb(200, 0, 0);
   }
 
-  .action-edit{
+  li[disabled]{
+    opacity: 0.4;
+  }
+
+  li[disabled] span[class^=js]{
+    display: none;
+  }
+
+  .js-action-edit{
     background: lightgreen;
-    color: white;
   }
 
 </style>
 </head>
 <body>
-  <script type="text/x-template">
+  <script id="template" type="text/x-template">
     <li id="{{property}}">
       <span class="property">{{property}}</span>:
-      <span class="action-edit">edit </span>
+      <span class="js-action-edit">edit </span>
       <span class="value">{{value}}</span>;
     </li>
   </script>
@@ -46,14 +53,17 @@
   <ol class="properties">
     <li id="shapeOutside">
       <span class="property">shape-outside</span>:
-      <span class="action-edit">edit </span> <span class="value">none</span>;
-    </li>
-    <li id="shapeInside">
-      <span class="property">shape-inside</span>:
+      <span class="js-action-edit">edit</span>
       <span class="value">none</span>;
     </li>
-    <li id="webkitClipPath">
+    <li id="shapeInside" disabled>
+      <span class="property">shape-inside</span>:
+      <span class="js-action-edit">edit</span>
+      <span class="value">none</span>;
+    </li>
+    <li id="clipPath">
       <span class="property">clip-path</span>:
+      <span class="js-action-edit">edit</span>
       <span class="value">none</span>;
     </li>
   </ol>

@@ -2,7 +2,7 @@
 
 var doc = null;
 var handlers = {
-  "action-edit": function(target){
+  "js-action-edit": function(target){
     var parent   = target.parentNode,
         property = parent.querySelector('.property').textContent,
         value    = parent.querySelector('.value').textContent;
@@ -78,8 +78,7 @@ function populateSidebar(){
       if (value) {
         element.textContent = value;
       } else {
-        console.warn(value);
-        prop.setAttribute('disabled','true');
+        prop.setAttribute('disabled');
       }
     });
   }
