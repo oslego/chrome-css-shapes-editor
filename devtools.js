@@ -8,8 +8,15 @@ var handlers = {
         value    = parent.querySelector('.value').textContent;
 
     if (property && value){
+      parent.classList.add('js-state-editing');
       setupEditor(property, value);
     }
+  },
+
+  "js-action-stop-edit": function(target){
+      var parent = target.parentNode;
+      parent.classList.remove('js-state-editing');
+      teardownEditor();
   }
 }
 

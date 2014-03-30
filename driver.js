@@ -114,6 +114,7 @@ function teardown(){
 
     property = undefined;
     value = undefined;
+    editor.off('shapechange');
     editor.remove();
     editor = null;
 }

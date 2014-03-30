@@ -32,12 +32,17 @@
     background: lightgreen;
   }
 
-  li[disabled] span[class^=js]{
+  .js-action-stop-edit{
     display: none;
+    background: crimson;
   }
 
-  .js-action-edit{
-    background: lightgreen;
+  .js-state-editing .js-action-stop-edit{
+    display: inline;
+  }
+
+  .js-state-editing .js-action-edit{
+    display: none;
   }
 
 </style>
