@@ -1,6 +1,7 @@
 <html>
 <head>
 <style>
+
   body{
     font-size: 11px;
     margin: 0;
@@ -27,8 +28,8 @@
     color: rgb(200, 0, 0);
   }
 
-  li[disabled]{
-    opacity: 0.4;
+  .js-action-edit{
+    background: lightgreen;
   }
 
   li[disabled] span[class^=js]{
@@ -42,30 +43,18 @@
 </style>
 </head>
 <body>
+
   <script id="template" type="text/x-template">
     <li id="{{property}}">
       <span class="property">{{property}}</span>:
-      <span class="js-action-edit">edit </span>
+      <span class="js-action-edit">edit</span>
+      <span class="js-action-stop-edit">stop-edit</span>
       <span class="value">{{value}}</span>;
     </li>
   </script>
 
   <ol class="properties">
-    <li id="shapeOutside">
-      <span class="property">shape-outside</span>:
-      <span class="js-action-edit">edit</span>
-      <span class="value">none</span>;
-    </li>
-    <li id="shapeInside" disabled>
-      <span class="property">shape-inside</span>:
-      <span class="js-action-edit">edit</span>
-      <span class="value">none</span>;
-    </li>
-    <li id="clipPath">
-      <span class="property">clip-path</span>:
-      <span class="js-action-edit">edit</span>
-      <span class="value">none</span>;
-    </li>
+    <!-- filled in dynamically based on selected element's computed style -->
   </ol>
 
 </body>

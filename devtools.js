@@ -13,6 +13,8 @@ var handlers = {
   }
 }
 
+const SUPPORTED_PROPERTIES = ["shape-outside", "shape-inside", "clip-path"];
+
 function onSelectElement(cb){
     chrome.devtools.panels.elements.onSelectionChanged.addListener(cb);
 }
@@ -58,6 +60,26 @@ function setupSidebar(win) {
 }
 
 /*
+  Takes a CSS property name string and returns its DOM notation.
+
+  @example: shape-inside -> shapeInside
+  @example: -webkit-shape-inside -> webkitShapeInside
+
+  @param {String} str CSS property name, possibly hyphenated.
+  @return {String}
+*/
+function getDOMCSSProperty(str){
+
+  // remove first dash if the property is prefixed
+  str = (str.indexOf("-") === 0) ? str.substr(1) : str;
+
+  // remove the dash and uppercase the char after the dash
+  return str.replace(/-(\S)/g, function(str, group){
+    return group.toUpperCase();
+  });
+}
+
+/*
   Generate the contents of the sidebar using the computed style
   of the currently selected element from the Elements panel.
 
@@ -66,19 +88,21 @@ function setupSidebar(win) {
 function populateSidebar(){
 
   function handler(styleString){
-    // const SUPPORTED_PROPERTIES = ["shape-outside","shape-inside","clip-path"];
-
     var style = JSON.parse(styleString);
-    var props = doc.querySelectorAll('.properties > li');
+    var container = doc.querySelector('.properties');
+    var template = doc.querySelector('script#template').textContent;
 
-    Array.prototype.forEach.call(props, function(prop) {
-      var element = prop.querySelector('.value');
-      var value = style[prop.id];
+    // empty container;
+    // no mem leaks because event listeners are delegated the document level.
+    container.innerHTML = "";
 
-      if (value) {
-        element.textContent = value;
-      } else {
-        prop.setAttribute('disabled');
+    SUPPORTED_PROPERTIES.forEach(function(property){
+      var value = style[getDOMCSSProperty(property)];
+      var frag;
+
+      if (value){
+        frag = template.replace(/{{value}}/g, value).replace(/{{property}}/g, property);
+        container.insertAdjacentHTML('beforeend', frag);
       }
     });
   }
