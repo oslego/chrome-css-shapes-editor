@@ -1,0 +1,62 @@
+<html>
+<head>
+<style>
+  body{
+    font-size: 11px;
+    margin: 0;
+    user-select: none;
+    font-family: Menlo, monospace;
+  }
+
+  .properties{
+    box-sizing: border-box;
+    padding: 2px 4px;
+    list-style: none;
+    color: rgb(48, 57, 66);
+  }
+
+  .properties li{
+    white-space: auto;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding-left: 38px;
+  }
+
+  .property{
+    margin-left: -20px;
+    color: rgb(200, 0, 0);
+  }
+
+  .action-edit{
+    background: lightgreen;
+    color: white;
+  }
+
+</style>
+</head>
+<body>
+  <script type="text/x-template">
+    <li id="{{property}}">
+      <span class="property">{{property}}</span>:
+      <span class="action-edit">edit </span>
+      <span class="value">{{value}}</span>;
+    </li>
+  </script>
+
+  <ol class="properties">
+    <li id="shapeOutside">
+      <span class="property">shape-outside</span>:
+      <span class="action-edit">edit </span> <span class="value">none</span>;
+    </li>
+    <li id="shapeInside">
+      <span class="property">shape-inside</span>:
+      <span class="value">none</span>;
+    </li>
+    <li id="webkitClipPath">
+      <span class="property">clip-path</span>:
+      <span class="value">none</span>;
+    </li>
+  </ol>
+
+</body>
+</html>

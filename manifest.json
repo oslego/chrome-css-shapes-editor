@@ -1,7 +1,8 @@
 {
-  "name": "x - CSS Shapes Editor",
+  "manifest_version": 2,
+  "name": "CSS Shapes Editor",
   "version": "0.1.0",
-  "description": "Editor for CSS Shapes",
+  "description": "Adds a GUI for editing CSS Shapes values like polygon(), circle() or ellipse()",
   "devtools_page": "devtools.html",
   "background": {
     "scripts": ["background.js"]
@@ -16,6 +17,5 @@
     "matches": ["<all_urls>"],
     "js": ["lib/CSSShapesEditor.js","driver.js"]
   }],
-  "content_security_policy": "script-src 'unsafe-eval' 'self' ; object-src 'self'",
-  "manifest_version": 2
+  "content_security_policy": "script-src 'unsafe-eval' 'self' ; object-src 'self'"
 }
