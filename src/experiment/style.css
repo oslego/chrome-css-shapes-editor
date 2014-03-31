@@ -1,0 +1,10 @@
+.outside{
+    margin: 50px;
+    padding: 50px;
+    outline: 1px solid red;
+    border: 50px solid rgba(0, 0, 250, 0.4);
+    float: left;
+}
+p{
+    margin: 0;
+}

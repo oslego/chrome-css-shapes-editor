@@ -1,0 +1,140 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+nav{
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  overflow: ellipsis;
+  position: relative;
+  z-index: 2;
+}
+
+input{
+  display: none;
+}
+
+label{
+  background: #eee;
+  padding: 1em;
+}
+
+input:checked + label{
+  flex: 1 1 auto;
+  background: #F0D5A4;
+} 
+
+#content {
+  position: relative;
+  width: 800px;
+  height: 400px;
+  margin: 0 auto;
+  background: papayawhip;
+}
+</style>
+
+<title>Polygon Drawing</title>
+</head>
+<body>
+    
+    <nav id="shape-type">
+      <input type="radio" name='shape-type' id='polygon' value='polygon' checked/>
+      <label for="polygon">
+        polygon()
+      </label>
+      <input type="radio" name='shape-type'  value='circle' id='circle'/>
+      <label for="circle">
+        circle()
+      </label>
+      <input type="radio" name='shape-type'  value='ellipse' id='ellipse'/>
+      <label for="ellipse">
+        ellipse()
+      </label>
+      <input type="radio" name='shape-type'  value='rectangle' id='rectangle'/>
+      <label for="rectangle">
+        rectangle()
+      </label>
+    </nav>
+    
+    <div id='content'>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+      
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+    </div>
+    <script src="CSSShapesEditor.js"></script>
+    
+    <script>
+    
+      var shapeType = ''
+      var nav = document.querySelector('nav')
+      var el = document.querySelector('#content');
+      var property = 'shape-inside';
+      var editor = null;
+      
+      function db(key, value){
+        if (key && !value){
+          return JSON.parse(window.localStorage['shape-editor'])[key];
+        }
+        
+        if (key && value){
+          var obj = {};
+          obj[key] = value;
+          
+          window.localStorage['shape-editor'] = JSON.stringify(obj);
+          return db(key)
+        }
+      }
+      
+      function setupValue(e){
+        if (e.target && e.target.value){
+          
+          if (shapeType == e.target.value){
+            return
+          }
+          
+          shapeType = e.target.value
+          setupEditor()
+        }
+      }
+      
+      function setupEditor(){
+        if (editor){
+          editor.remove()
+        }
+        
+        editor = new CSSShapesEditor(el, shapeType + '()')
+        editor.on('shapechange', function(){
+          editor.target.style[property] = this.getCSSValue()
+          db('value', this.getCSSValue())
+        })
+             
+        document.querySelector('[data-role="shape-editor"]').style.zIndex = 1
+      }
+      
+      
+      if (db('value')){
+        setupValue.call(this, { target: { value: db('value') } })
+        el.style[property] = db('value');
+      }
+      else{
+        setupValue.call(this, { target: { value: document.querySelector('input:checked').value }})
+      }
+      
+      nav.addEventListener('click', setupValue);
+      document.addEventListener('keypress', function(e){
+        if (editor && e.keyCode == 116){
+          editor.toggleFreeTransform()
+        }
+      })
+      
+    </script>
+</body>
+</html>
