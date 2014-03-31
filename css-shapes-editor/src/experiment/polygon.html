@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+#content {
+  position: relative;
+  width: 800px;
+  height: 400px;
+  margin: 0 auto;
+  background: rgba(0, 192, 238, 1);
+  background: black;
+  background: aliceblue;
+  shape-inside: polygon(0 0, 800px 400px, 0 400px) border-box;
+}
+</style>
+
+<title>Polygon Drawing</title>
+</head>
+<body>
+    <div id='content'>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+    </div>
+    <script data-main='../main.js' src="../third-party/requirejs/require.js"></script>
+
+    <script>
+
+    require(['main'], function(CSSShapesEditor){
+
+      var el = document.querySelector('#content');
+      var property = 'shape-inside';
+      var value = getComputedStyle(el, null)[property];
+
+      var ed = new CSSShapesEditor(el, value)
+      ed.on('ready', function(){
+        console.log('editor ready')
+      })
+
+      ed.on('removed', function(e){
+        console.log('editor removed')
+      })
+
+      ed.on('shapechange', function(){
+        console.log(ed.target.style[property] = this.getCSSValue())
+      })
+
+      // toggle free transform
+      document.addEventListener('keypress', function(e){
+
+        // 'T' key
+        if (e.keyCode === 116){
+          ed.toggleFreeTransform()
+        }
+      })
+
+      // programmatic update
+      // ed.update('polygon(0 0, 400px 200px, 0 200px)')
+    })
+    </script>
+</body>
+</html>

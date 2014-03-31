@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css"/>
+<style>
+    .shape {
+      width: 800px;
+      height: 400px;
+      shape-outside: rectangle(100px, 100px, 400px, 200px);
+    }
+</style>
+
+<title>Rectangle Drawing</title>
+</head>
+<body>
+        <div class='shape outside'></div>
+      <h1>Playground</h1>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+    <script data-main='../main.js' src="../third-party/requirejs/require.js"></script>
+
+    <script>
+
+    require(['main'], function(CSSShapesEditor){
+
+      var el = document.querySelector('.shape');
+      var property = 'shape-outside';
+      var value = getComputedStyle(el, null)[property];
+
+      var ed = new CSSShapesEditor(el, value)
+
+      ed.on('shapechange', function(){
+        console.log(ed.target.style[property] = this.getCSSValue())
+      })
+    })
+    </script>
+</body>
+</html>
