@@ -36,6 +36,7 @@ chrome.devtools.panels.elements.createSidebarPane(
 
       // port = chrome.runtime.connect({name: "devtools"});
       // port.onMessage.addListener(function(data) {
+      //   console.log('got data!', data);
       //   // TODO treat incoming message
       // });
 });
@@ -56,7 +57,7 @@ function setupSidebar(win) {
     if (handler && typeof handler === 'function'){
       handler.call(this, e.target);
     }
-  })
+  });
 
   // drop the editor then switching to a new element;
   onSelectElement(teardownEditor);

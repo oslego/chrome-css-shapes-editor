@@ -1,4 +1,4 @@
-// var port = chrome.runtime.connect({name: "page"})
+
 // var editor = null
 // var shapeType = null
 // var messages = {
@@ -92,19 +92,28 @@
 //   }
 // })
 
-var editor, property, value;
+var editor, property, value, port;
+var port = chrome.runtime.connect({name: 'page'});
+port.postMessage({"shape":1});
+
+chrome.runtime.sendMessage({oprea: 2});
+console.log(chrome.tabs);
 
 function setup(el, property, value){
-    console.warn('I received a selected element!', el, property, value)
+    console.warn('I received a selected element!', el, property, value);
     teardown();
 
     // property = 'shape-outside';
     // value = getComputedStyle(el, null)[property];
-    editor = new CSSShapesEditor(el, value)
+    editor = new CSSShapesEditor(el, value);
 
     editor.on('shapechange', function(){
-      console.log(editor.target.style[property] = this.getCSSValue())
-    })
+      var value = this.getCSSValue();
+
+      editor.target.style[property] = value;
+      port.postMessage({shape: value});
+
+    });
 }
 
 function teardown(){
