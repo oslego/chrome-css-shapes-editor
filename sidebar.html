@@ -19,7 +19,6 @@
   .properties li{
     white-space: auto;
     text-overflow: ellipsis;
-    overflow: hidden;
     padding-left: 38px;
   }
 
@@ -28,21 +27,42 @@
     color: rgb(200, 0, 0);
   }
 
-  .js-action-edit{
-    background: lightgreen;
+  .ico{
+    /*width: 1.2em;*/
+    height: 1.2em;
   }
 
-  .js-action-stop-edit{
+  [data-action],
+  [data-action] a {
+    display: inline-block;
+    border: 1px solid red;
+    height: 1.2em;
+    background: #eee;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-user-select: none;
+  }
+
+  [data-active]{
+    background: #666;
+  }
+
+  [data-action][disabled]{
     display: none;
-    background: crimson;
   }
 
-  .js-state-editing .js-action-stop-edit{
-    display: inline;
+  [data-action] a:hover{
+    background: #999;
   }
 
-  .js-state-editing .js-action-edit{
+  [data-action] > nav{
     display: none;
+    position: absolute;
+    left: 0;
+  }
+
+  [data-action][data-active] > nav{
+    display: block;
   }
 
 </style>
@@ -52,15 +72,143 @@
   <script id="template" type="text/x-template">
     <li id="{{property}}">
       <span class="property">{{property}}</span>:
-      <span class="js-action-edit">edit</span>
-      <span class="js-action-stop-edit">stop-edit</span>
+      <span class="js-action-edit" data-state="active">edit</span>
+      <span class="js-action-create" data-state="active">+</span>
+      <nav>
+        <span data-shape="circle">circle</span>
+        <span data-shape="ellipse">ellipse</span>
+        <span data-shape="polygon">polygon</span>
+      </nav>
       <span class="value">{{value}}</span>;
     </li>
   </script>
 
   <ol class="properties">
     <!-- filled in dynamically based on selected element's computed style -->
+    <li id="shape-outside">
+      <span class="property">shape-outside</span>:
+      <span class="ico ico-edit" data-action="edit" disabled>edit</span>
+      <span class="ico ico-create" data-action="create">create
+        <nav>
+          <a class="ico ico-circle" data-shape="circle()">circle()</a>
+          <a class="ico ico-ellipse" data-shape="ellipse()">ellipse()</a>
+          <a class="ico ico-polygon" data-shape="polygon()">polygon()</a>
+        </nav>
+      </span>
+
+      <span class="value">none</span>;
+    </li>
+
+    <li id="shape-inside">
+      <span class="property">shape-inside</span>:
+      <span class="ico ico-edit" data-action="edit" disabled>edit</span>
+      <span class="ico ico-create" data-action="create">create
+        <nav>
+          <a class="ico ico-circle" data-shape="circle()">circle()</a>
+          <a class="ico ico-ellipse" data-shape="ellipse()">ellipse()</a>
+          <a class="ico ico-polygon" data-shape="polygon()">polygon()</a>
+        </nav>
+      </span>
+
+      <span class="value">none</span>;
+    </li>
   </ol>
+
+  <script>
+
+  document.on = document.addEventListener;
+
+  EDITOR_CREATE = "shape:editorcreate";
+  EDITOR_ON     = "shape:editoron";
+  EDITOR_OFF    = "shape:editoroff";
+
+  function trigger(eventName, data){
+    var event = new CustomEvent(eventName, {"detail": data});
+    document.dispatchEvent(event);
+  }
+
+  /*
+    Returns the first ancestor elements which matches the given selector
+    starting from the element upwards the DOM tree.
+  */
+  Element.prototype.queryAncestor = function(selector){
+    var el = this.parentNode;
+    while (el !== document){
+      if (el.matches(selector)){
+        return el;
+      }
+      el = el.parentNode;
+    }
+
+    return undefined;
+  }
+
+  document.on('click', function(e){
+    var target = e.target,
+        dataset = target.dataset,
+        parent = target.queryAncestor('li');
+
+    if (dataset && dataset.action){
+      if (dataset.active !== undefined){
+        target.removeAttribute('data-active');
+
+        if (dataset.action == "edit"){
+          trigger(EDITOR_OFF, {
+            property: parent.id,
+            shape: parent.querySelector('.value').textContent
+          })
+        }
+
+      } else {
+        target.setAttribute('data-active', true);
+
+        // TODO: turn off any existing editor
+        if (dataset.action == "edit"){
+          trigger(EDITOR_ON, {
+            property: parent.id,
+            shape: parent.querySelector('.value').textContent
+          })
+        }
+      }
+    }
+
+    if (dataset && dataset.shape){
+
+      var edit = parent.querySelector('[data-action="edit"]');
+      edit.removeAttribute('disabled');
+      edit.setAttribute('data-active', true);
+
+      var create = parent.querySelector('[data-action="create"]');
+      create.setAttribute('disabled', true)
+      create.removeAttribute('data-active');
+
+      var value = parent.querySelector('.value');
+      value.innerHTML = dataset.shape;
+
+      trigger(EDITOR_CREATE, {
+        shape: dataset.shape,
+        property: parent.id
+      });
+    }
+
+    var actives = document.querySelectorAll('[data-action="create"][data-active]');
+    Array.prototype.forEach.call(actives, function(active){
+      if (!active.contains(target)){
+        active.removeAttribute('data-active');
+      }
+    })
+
+  })
+
+  document.on(EDITOR_CREATE, function(e){
+    console.log(e);
+  })
+
+  document.on(EDITOR_OFF, function(e){
+    console.warn('editor off', e)
+  })
+
+  </script>
 
 </body>
 </html>

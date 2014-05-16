@@ -59,6 +59,10 @@ function setupSidebar(win) {
     }
   });
 
+  doc.addEventListener(win.EDITOR_CREATE, function(){
+    console.log('oprea');
+  });
+
   // drop the editor then switching to a new element;
   onSelectElement(teardownEditor);
 
