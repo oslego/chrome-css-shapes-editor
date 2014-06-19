@@ -1,3 +1,17 @@
+// Copyright (c) 2014 Adobe Systems Incorporated. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
 /*global define, eve */
 
@@ -76,6 +90,10 @@ define(['eve', 'CSSUtils', 'snap'], function(eve, CSSUtils, Snap){
             // make sure editor is the top-most thing on the page
             // see http://softwareas.com/whats-the-maximum-z-index
             this.holder.style.zIndex = 2147483647;
+
+            // prevents text selection when doing dbl click
+            this.holder.style.webkitUserSelect = "none";
+            this.holder.style.userSelect = "none";
 
             this.holder.setAttribute('data-role', 'shape-editor');
 

@@ -1,3 +1,17 @@
+// Copyright (c) 2014 Adobe Systems Incorporated. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
 /*global define */
 
@@ -16,13 +30,13 @@ define(['Editor', 'CSSUtils', 'lodash', 'snap', 'snap.freeTransform', 'snap.plug
         },
         bboxAttrs: {},
         axesAttrs: {
-            stroke: 'rgba(0, 192, 238, 1)',
+            stroke: 'rgba(0, 162, 255, 1)',
             'stroke-dasharray': '0, 0',
             opacity: 0.8
         },
         discAttrs: {
             fill: 'rgba(255, 255, 0, 1)',
-            stroke: 'rgba(0, 192, 238, 1)'
+            stroke: 'rgba(0, 162, 255, 1)'
         },
         xUnit: 'px',
         yUnit: 'px'
@@ -171,7 +185,7 @@ define(['Editor', 'CSSUtils', 'lodash', 'snap', 'snap.freeTransform', 'snap.plug
             throw new Error('No polygon() function definition in provided value');
         }
 
-        infos = /polygon\s*\((?:([a-z]*),)?\s*((?:[-+0-9.]+[a-z%]*|\s|\,)*)\)\s*((?:margin|content|border|padding)\-box)?/i.exec(shape.trim());
+        infos = /polygon\s*\((?:\s*([a-z]*)\s*,)?\s*((?:[-+0-9.]+[a-z%]*|\s|\,)*)\)\s*((?:margin|content|border|padding)\-box)?/i.exec(shape.trim());
 
         if (infos && infos[2].length > 0){
             coords = (
@@ -184,7 +198,7 @@ define(['Editor', 'CSSUtils', 'lodash', 'snap', 'snap.freeTransform', 'snap.plug
                     var points = pair.split(' ').map(function(pointString, i) {
                         var options = {
                             boxType: infos[3] || defaultRefBox,
-                            isHeightRelated: true
+                            isHeightRelated: (i === 1) // only y can be height related.
                         };
 
                         return CSSUtils.convertToPixels(pointString, element, options);
@@ -268,7 +282,7 @@ define(['Editor', 'CSSUtils', 'lodash', 'snap', 'snap.freeTransform', 'snap.plug
 
             // turn px value into original units
             xCoord = CSSUtils.convertFromPixels(x, vertex.xUnit, element, { isHeightRelated: false, boxType: refBox });
-            yCoord = CSSUtils.convertFromPixels(y, vertex.yUnit, element, { isHeightRelated: false, boxType: refBox });
+            yCoord = CSSUtils.convertFromPixels(y, vertex.yUnit, element, { isHeightRelated: true, boxType: refBox });
 
             // return space-separted pair
             return [xCoord, yCoord].join(' ');
@@ -350,9 +364,9 @@ define(['Editor', 'CSSUtils', 'lodash', 'snap', 'snap.freeTransform', 'snap.plug
                 this.vertices.splice(edge.index1, 0, {
                     x: projection.x,
                     y: projection.y,
-                    // TODO: infer units from the vertices of the edge
-                    xUnits: this.config.xUnit,
-                    yUnits: this.config.yUnit,
+                    // inherit units from the preceding vertex, or use defaults
+                    xUnit: this.vertices[edge.index0].xUnit || this.config.xUnit,
+                    yUnit: this.vertices[edge.index0].yUnit || this.config.yUnit,
                 });
 
                 this.activeVertexIndex = edge.index1;
