@@ -1,3 +1,17 @@
+// Copyright (c) 2014 Adobe Systems Incorporated. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 /*jslint vars: true, plusplus: true, devel: true, browser: true, nomen: true, indent: 4, maxerr: 50 */
 /*global define, describe, it, expect, beforeEach, afterEach, waits, waitsFor, runs, $, waitsForDone, spyOn */
 
@@ -130,6 +144,17 @@ function($, markup, PolygonEditor){
             expect(outValue).toEqual(inValue);
         });
 
+        it('should parse polygon with whitespace-padded fill-mode', function(){
+            var inValue = 'polygon( nonzero , 0px 0px, 100px 0px, 100px 100px)',
+                outValue,
+                expected = 'polygon(nonzero, 0px 0px, 100px 0px, 100px 100px)';
+
+            editor = new PolygonEditor(target, inValue);
+            outValue = editor.getCSSValue();
+
+            expect(outValue).toEqual(expected);
+        });
+
         it('should infer polygon from element when value contains empty polygon', function(){
             // empty polygon declaration tells the editor to automatically infer the shape
             // should not throw error.
@@ -166,6 +191,30 @@ function($, markup, PolygonEditor){
 
             // dispatch mock 'mousedown' event
             editor.onMouseDown.call(editor, mockEvent);
+
+            expect(editor.vertices.length).toEqual(expectedVerticesLength);
+        });
+
+        it('should add new vertex which inherits unit types from preceding vertex', function(){
+            var inValue = 'polygon(nonzero, 0% 0px, 800px 0%, 800px 400px, 0% 100%)',
+                box = target.getBoundingClientRect(),
+                mockEvent = _getMockEvent(target.offsetLeft + 100, target.offsetTop),
+                expectedVerticesLength;
+
+            editor = new PolygonEditor(target, inValue);
+            // expect to add one more vertex
+            expectedVerticesLength = editor.vertices.length + 1;
+
+            // 800px 0%
+            expect(editor.vertices[1].xUnit).toEqual('px');
+            expect(editor.vertices[1].yUnit).toEqual('%');
+
+            // dispatch mock 'mousedown' event
+            editor.onMouseDown.call(editor, mockEvent);
+
+            // newly added vertex, between (0% 0px) and (800px 0%), inherits units from (0% 0px)
+            expect(editor.vertices[1].xUnit).toEqual('%');
+            expect(editor.vertices[1].yUnit).toEqual('px');
 
             expect(editor.vertices.length).toEqual(expectedVerticesLength);
         });
