@@ -1,5 +1,3 @@
-// var port = null,
-
 var doc = null;
 var handlers = {
   "js-action-edit": function(target){
@@ -18,9 +16,9 @@ var handlers = {
       parent.classList.remove('js-state-editing');
       teardownEditor();
   }
-}
+};
 
-const SUPPORTED_PROPERTIES = ["shape-outside", "shape-inside", "clip-path"];
+var SUPPORTED_PROPERTIES = ["shape-outside", "shape-inside", "clip-path"];
 
 function onSelectElement(cb){
     chrome.devtools.panels.elements.onSelectionChanged.addListener(cb);
@@ -30,15 +28,15 @@ chrome.devtools.panels.elements.createSidebarPane(
     "CSS Shapes",
     function(sidebar) {
       sidebar.setPage('sidebar.html');
-      sidebar.setHeight('200px');
+      sidebar.setHeight('100vh');
       sidebar.onShown.addListener(setupSidebar);
       // TODO: teardown on onHide
 
-      // port = chrome.runtime.connect({name: "devtools"});
-      // port.onMessage.addListener(function(data) {
-      //   console.log('got data!', data);
-      //   // TODO treat incoming message
-      // });
+      var port = chrome.runtime.connect({name: "devtools"});
+      port.onMessage.addListener(function(obj) {
+        doc.body.insertAdjacentHTML('beforeend', obj.shape);
+        console.warn('got data', obj.shape);
+      });
 });
 
 /*
@@ -60,7 +58,7 @@ function setupSidebar(win) {
   });
 
   doc.addEventListener(win.EDITOR_CREATE, function(){
-    console.log('oprea');
+
   });
 
   // drop the editor then switching to a new element;
