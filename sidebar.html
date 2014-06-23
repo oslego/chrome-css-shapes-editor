@@ -32,13 +32,15 @@
     height: 1.2em;
   }
 
-  [data-action],
-  [data-action] a {
+  [data-action]{
     display: inline-block;
     border: 1px solid red;
     height: 1.2em;
     background: #eee;
-    text-decoration: none;
+  }
+
+  [data-action],
+  nav a{
     cursor: pointer;
     -webkit-user-select: none;
   }
@@ -51,18 +53,45 @@
     display: none;
   }
 
-  [data-action] a:hover{
-    background: #999;
+  nav {
+    background: rgb(55, 121, 217);
+    margin-top: 0.8em;
+  }
+
+  nav a{
+    text-decoration: none;
+    padding: 0.5em;
+    color: white;
+  }
+
+  nav a:hover{
+    background-color: rgba(38, 84, 150, 0.8);
+  }
+
+  nav :first-child,
+  nav :last-child{
+    padding: 0.5em 0.75em;
+  }
+
+  nav::before {
+    content: '';
+	  height: 0;
+  	border-left: 0.8em solid transparent;
+	  border-right: 0.8em solid transparent;
+	  border-bottom: 0.7em solid rgb(55, 121, 217);
+    position: absolute;
+    top: -0.6em;
+    left: 1em;
   }
 
   [data-action] > nav{
     display: none;
     position: absolute;
-    left: 0;
   }
 
-  [data-action][data-active] > nav{
-    display: block;
+  [data-action][data-active] nav{
+    display: flex;
+    z-index: 2;
   }
 
 </style>
