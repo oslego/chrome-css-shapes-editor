@@ -7,7 +7,7 @@
 
     // build this from $0 (Promise)
     this.storage = {
-      'shape-outside': 'none',
+      'shape-outside': 'circle()',
       'clip-path': 'none'
     };
 

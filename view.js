@@ -19,6 +19,10 @@
         this.root.$on = window.$on.bind(root.document);
         this.root.qsa = window.qsa.bind(root.document);
 
+        // TODO: scope qs, qsa, $live and $on to root.rocument
+        // var oldqs = window.qs;
+        // window.qs = function(selector, scope){ return oldqs(selector, scope || self.document);};
+
         this.ENTER_KEY = 13;
         this.ESCAPE_KEY = 27;
 
@@ -53,115 +57,120 @@
             });
           };
         }());
+
+        this.init();
     }
 
-    View.prototype._editItem = function (id, title) {
-        var listItem = qs('[data-id="' + id + '"]');
-
-        if (!listItem) {
-            return;
-        }
-
-        listItem.className = listItem.className + ' editing';
-
-        var input = document.createElement('input');
-        input.className = 'edit';
-
-        listItem.appendChild(input);
-        input.focus();
-        input.value = title;
+    View.prototype.init = function(){
+        // uses capture phase so the click is first handled by handleToggle, if matches
+        this.delegate('body', 'click', function(){
+          self.toggleActivesOff(null, '.js-action--create');
+        }, true);
     };
 
-    View.prototype._editItemDone = function (id, title) {
-        var listItem = qs('[data-id="' + id + '"]');
-
-        if (!listItem) {
-            return;
-        }
-
-        var input = qs('input.edit', listItem);
-        listItem.removeChild(input);
-
-        listItem.className = listItem.className.replace('editing', '');
-
-        qsa('label', listItem).forEach(function (label) {
-            label.textContent = title;
-        });
-    };
-
-    View.prototype.render = function (viewCmd, parameter) {
+    View.prototype.render = function (viewCmd, data) {
         var self = this;
         var viewCommands = {
-            showProperties: function () {
-                var attrs = parameter,
-                    fragment = self.$template.textContent,
-                    html = '';
+          showProperties: function () {
+            var attrs = data,
+                templateText = self.$template.textContent,
+                html = '';
 
-                Object.keys(attrs).forEach(function(key){
-                  html += _.template(fragment, {"property": key, "value": attrs[key]});
-                });
+            Object.keys(attrs).forEach(function(key){
+              html += _.template(templateText, {"property": key, "value": attrs[key]});
+            });
 
-                self.$properties.innerHTML = html;
-            },
-            updateElementCount: function () {
-                that.$todoItemCounter.innerHTML = that.template.itemCounter(parameter);
-            },
-            editItem: function () {
-                that._editItem(parameter.id, parameter.title);
-            }
+            self.$properties.innerHTML = html;
+          },
+
+          updateValue: function(){
+            var property = data.property,
+                value = data.value;
+
+            var el = qs('#'+property + ">.value", self.document);
+            el.textContent = value;
+          }
         };
 
         viewCommands[viewCmd]();
+    };
+
+    /*
+      Finds elements in the active state, class="js-active",
+      and simulates a click to toggle to their inactive state.
+
+      @param {Node} ignoreEl Ignore active match if it's an ancestor of this element
+      @param {String} filter Selector used to filter active elements
+    */
+    View.prototype.toggleActivesOff = function(ignoreEl, filter){
+      var selector = (typeof filter == 'string' && filter.length) ? filter + '.js-active' : '.js-active';
+      var actives = qsa(selector, this.document);
+
+      Array.prototype.forEach.call(actives, function(active){
+        if (ignoreEl && active.contains(ignoreEl)){
+          return;
+        }
+
+        // fake click triggers 'toggleEditor' and informs Controller.js
+        active.dispatchEvent(new MouseEvent('click'));
+      });
     };
 
     View.prototype.bind = function (event, handler) {
         var self = this;
         var events = {
 
-          'editorToggle': function(){
+          'toggleEditor': function(){
 
-            self.delegate('.js-action--edit', 'click', function () {
-              var target = this;
-              var actives = self.document.querySelectorAll('.js-active');
-              Array.prototype.forEach.call(actives, function(active){
-                if (!active.contains(target)){
-                  active.classList.remove('js-active');
-                }
-              });
+            self.delegate('.js-action--edit', 'click', function(e){
+              var target = e.target,
+                  isActive = target.classList.contains('js-active');
+
+              if (!isActive){
+                  self.toggleActivesOff(null, '.js-action--edit');
+              }
 
               target.classList.toggle('js-active');
 
               handler({
-                  property: $parent(target,'li').id,
-                  enabled: target.classList.contains('js-active')
+                property: $parent(target, 'li').id,
+                enabled: !isActive
               });
             });
           },
 
-          'createToggle': function(){
+          'createShape': function(e){
+            self.delegate('[data-shape]', 'click', function(e){
+              var target = e.target,
+                  parent = $parent(target, 'li'),
+                  property = parent.id,
+                  value = target.dataset.shape,
+                  createButton = qs('.js-action--create', parent),
+                  editButton = qs('.js-action--edit', parent);
 
-            // uses capture phase so the click on the target is handled first
-            self.document.addEventListener('click', function(e){
-                var target = e.target;
-                var actives = self.document.querySelectorAll('.js-action--create.js-active');
-                Array.prototype.forEach.call(actives, function(active){
-                  if (!active.contains(target)){
-                    active.classList.remove('js-active');
-                  }
-                });
-            }, true);
+              self.toggleActivesOff();
 
-            self.delegate('.js-action--create', 'click', function () {
-                var el = this;
+              createButton.setAttribute('disabled', true);
 
-                el.classList.toggle('js-active');
+              editButton.removeAttribute('disabled');
+              editButton.dispatchEvent(new MouseEvent('click'));
 
-                handler({
-                    // property: self._toggleEditorState(this),
-                    enabled: (this.dataset.active) ? true : false
-                });
+              // TODO: let live editor setup echo the value
+              self.render("updateValue", {property: property, value: value});
+
+              handler({
+                property: property,
+                value: value
+              });
+
             });
+          },
 
+          'createShapeMenu': function(){
+            self.delegate('.js-action--create', 'click', function(e){
+              var target = e.target;
+              target.classList.toggle('js-active');
+            });
           }
         };
 

@@ -13,13 +13,20 @@
 		self.model = model;
 		self.view = view;
 
-		self.view.bind('editorToggle', function (editor) {
+		self.view.bind('toggleEditor', function (editor) {
+			console.log('toggle editor', editor);
 			self.toggleEditor(editor.property, editor.enabled);
 		});
 
-		self.view.bind('createToggle', function (editor) {
+		self.view.bind('createShapeMenu', function (editor) {
 			// self.toggleComplete(editor.property, editor.enabled);
 		});
+
+		self.view.bind('createShape', function (editor) {
+			console.log('create shape!');
+			// self.toggleComplete(editor.property, editor.enabled);
+		});
+
 	}
 
 	Controller.prototype.toggleEditor = function(property, enabled){
