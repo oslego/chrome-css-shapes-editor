@@ -9,55 +9,38 @@
 	 * @param {object} view The view instance
 	 */
 	function Controller(model, view) {
-		var that = this;
-		that.model = model;
-		that.view = view;
+		var self = this;
+		self.model = model;
+		self.view = view;
 
-		that.view.bind('itemEdit', function (item) {
-			that.editItem(item.id);
+		self.view.bind('editorToggle', function (editor) {
+			self.toggleEditor(editor.property, editor.enabled);
 		});
 
-		that.view.bind('itemToggle', function (item) {
-			that.toggleComplete(item.id, item.completed);
+		self.view.bind('createToggle', function (editor) {
+			// self.toggleComplete(editor.property, editor.enabled);
 		});
 	}
+
+	Controller.prototype.toggleEditor = function(property, enabled){
+			// cycle through model; see if property changed state
+			// turn on/off live editor
+
+			// setup other editor if necessary
+	};
 
 	/**
 	 * Loads and initialises the view
 	 *
 	 * @param {string} '' | 'active' | 'completed'
 	 */
-	Controller.prototype.setView = function (locationHash) {
-		var route = locationHash.split('/')[1];
-		var page = route || '';
-		this._updateFilterState(page);
-	};
-
-	/**
-	 * An event to fire on load. Will get all items and display them in the
-	 * todo-list
-	 */
-	Controller.prototype.showAll = function () {
-		var that = this;
-		that.model.read(function (data) {
-			that.view.render('showEntries', data);
+	Controller.prototype.setView = function () {
+		var self = this;
+		self.model.readAll(function(data){
+			self.view.render('showProperties', data);
 		});
 	};
 
-	/*
-	 * Triggers the item editing mode.
-	 */
-	Controller.prototype.editItem = function (id) {
-		var that = this;
-		that.model.read(id, function (data) {
-			that.view.render('editItem', {id: id, title: data[0].title});
-		});
-	};
-
-	Controller.prototype._updateFilterState = function (currentPage) {
-		this._activeRoute = currentPage;
-		this.view.render('setFilter', currentPage);
-	};
 
 	// Export to window
 	window.app = window.app || {};

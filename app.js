@@ -5,7 +5,7 @@
   var ext;
   function Extension(root) {
 
-    // build this from $0
+    // build this from $0 (Promise)
     this.storage = {
       'shape-outside': 'none',
       'clip-path': 'none'
@@ -16,6 +16,13 @@
     this.controller = new app.Controller(this.model, this.view);
   }
 
+  Extension.prototype.teardown = function(){
+    this.storage = null;
+    this.model = null;
+    this.view = null;
+    this.controller = null;
+  };
+
   // run on sidebar show
   // function setView() {
   //   todo.controller.setView(document.location.hash);
@@ -24,9 +31,10 @@
   (function(){
     var sidebar = document.createElement('iframe');
     sidebar.src = 'sidebar.html';
+
     sidebar.addEventListener('load', function(e){
-      var root = e.target.contentWindow.document;
-      ext = new Extension(root);
+      ext = new Extension(e.target.contentWindow);
+      ext.controller.setView();
     });
 
     document.body.appendChild(sidebar);

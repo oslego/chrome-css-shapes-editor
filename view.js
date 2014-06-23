@@ -1,4 +1,4 @@
-/*global qs, qsa, $on, $parent, $live */
+/*global qs, qsa, $on, $parent, $live, _ */
 
 (function (window) {
     'use strict';
@@ -13,13 +13,46 @@
      *     Renders the given command with the options
      */
     function View(root) {
-        this.document = root;
+        var self = this;
+        this.root = root;
+        this.document = root.document;
+        this.root.$on = window.$on.bind(root.document);
+        this.root.qsa = window.qsa.bind(root.document);
 
         this.ENTER_KEY = 13;
         this.ESCAPE_KEY = 27;
 
         this.$template = qs('#template', this.document);
         this.$properties = qs('.properties', this.document);
+
+        this.delegate = (function () {
+          var eventRegistry = {};
+
+          function dispatchEvent(event) {
+            var targetElement = event.target;
+
+            eventRegistry[event.type].forEach(function (entry) {
+              var potentialElements = window.qsa(entry.selector, self.document);
+              var hasMatch = Array.prototype.indexOf.call(potentialElements, targetElement) >= 0;
+
+              if (hasMatch) {
+                entry.handler.call(targetElement, event);
+              }
+            });
+          }
+
+          return function (selector, event, handler) {
+            if (!eventRegistry[event]) {
+              eventRegistry[event] = [];
+              self.root.$on(self.document.documentElement, event, dispatchEvent, true);
+            }
+
+            eventRegistry[event].push({
+              selector: selector,
+              handler: handler
+            });
+          };
+        }());
     }
 
     View.prototype._editItem = function (id, title) {
@@ -57,66 +90,78 @@
     };
 
     View.prototype.render = function (viewCmd, parameter) {
-        var that = this;
+        var self = this;
         var viewCommands = {
-            showEntries: function () {
-                that.$todoList.innerHTML = that.template.show(parameter);
-            },
-            removeItem: function () {
-                that._removeItem(parameter);
+            showProperties: function () {
+                var attrs = parameter,
+                    fragment = self.$template.textContent,
+                    html = '';
+
+                Object.keys(attrs).forEach(function(key){
+                  html += _.template(fragment, {"property": key, "value": attrs[key]});
+                });
+
+                self.$properties.innerHTML = html;
             },
             updateElementCount: function () {
                 that.$todoItemCounter.innerHTML = that.template.itemCounter(parameter);
             },
-            clearCompletedButton: function () {
-                that._clearCompletedButton(parameter.completed, parameter.visible);
-            },
-            contentBlockVisibility: function () {
-                that.$main.style.display = that.$footer.style.display = parameter.visible ? 'block' : 'none';
-            },
-            toggleAll: function () {
-                that.$toggleAll.checked = parameter.checked;
-            },
-            setFilter: function () {
-                that._setFilter(parameter);
-            },
-            clearNewTodo: function () {
-                that.$newTodo.value = '';
-            },
-            elementComplete: function () {
-                that._elementComplete(parameter.id, parameter.completed);
-            },
             editItem: function () {
                 that._editItem(parameter.id, parameter.title);
-            },
-            editItemDone: function () {
-                that._editItemDone(parameter.id, parameter.title);
             }
         };
 
         viewCommands[viewCmd]();
     };
 
-    View.prototype._itemId = function (element) {
-        var li = $parent(element, 'li');
-        return parseInt(li.dataset.id, 10);
-    };
-
     View.prototype.bind = function (event, handler) {
-        var that = this;
+        var self = this;
         var events = {
-          'itemEdit': function(){
-              // $live('#todo-list li label', 'dblclick', function () {
-              //     handler({id: that._itemId(this)});
-              // });
+
+          'editorToggle': function(){
+
+            self.delegate('.js-action--edit', 'click', function () {
+              var target = this;
+              var actives = self.document.querySelectorAll('.js-active');
+              Array.prototype.forEach.call(actives, function(active){
+                if (!active.contains(target)){
+                  active.classList.remove('js-active');
+                }
+              });
+
+              target.classList.toggle('js-active');
+
+              handler({
+                  property: $parent(target,'li').id,
+                  enabled: target.classList.contains('js-active')
+              });
+            });
           },
-          'itemToggle': function(){
-            // $live('#todo-list .toggle', 'click', function () {
-            //     handler({
-            //         id: that._itemId(this),
-            //         completed: this.checked
-            //     });
-            // });
+
+          'createToggle': function(){
+
+            // uses capture phase so the click on the target is handled first
+            self.document.addEventListener('click', function(e){
+                var target = e.target;
+                var actives = self.document.querySelectorAll('.js-action--create.js-active');
+                Array.prototype.forEach.call(actives, function(active){
+                  if (!active.contains(target)){
+                    active.classList.remove('js-active');
+                  }
+                });
+            }, true);
+
+            self.delegate('.js-action--create', 'click', function () {
+                var el = this;
+
+                el.classList.toggle('js-active');
+
+                handler({
+                    // property: self._toggleEditorState(this),
+                    enabled: (this.dataset.active) ? true : false
+                });
+            });
+
           }
         };
 

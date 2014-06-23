@@ -16,6 +16,11 @@
     callback(this.storage[query]);
 	};
 
+  Model.prototype.readAll = function (callback) {
+    callback = callback || function () {};
+    callback(this.storage);
+  };
+
 	Model.prototype.update = function (id, data, callback) {
     callback = callback || function () {};
 		this.storage[id] = data;
