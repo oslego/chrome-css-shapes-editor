@@ -13,57 +13,32 @@
      *     Renders the given command with the options
      */
     function View(root) {
-        var self = this;
-        this.root = root;
-        this.document = root.document;
-        this.root.$on = window.$on.bind(root.document);
-        this.root.qsa = window.qsa.bind(root.document);
+        var oldqs = window.qs,
+            oldqsa = window.qsa,
+            olddelegate = window.$live;
 
-        // TODO: scope qs, qsa, $live and $on to root.rocument
-        // var oldqs = window.qs;
-        // window.qs = function(selector, scope){ return oldqs(selector, scope || self.document);};
+        root.$on = window.$on.bind(root.document);
+        root.qs = window.qs.bind(root.document);
+        root.qsa = window.qsa.bind(root.document);
+
+        // re-scope helpers for injected window
+        window.qs = function(selector, scope){ return oldqs(selector, scope || root.document);};
+        window.qsa = function(selector, scope){ return oldqsa(selector, scope || root.document);};
+        window.delegate = function(selector, event, handler){ return olddelegate(selector, event, handler, root);};
 
         this.ENTER_KEY = 13;
         this.ESCAPE_KEY = 27;
 
-        this.$template = qs('#template', this.document);
-        this.$properties = qs('.properties', this.document);
-
-        this.delegate = (function () {
-          var eventRegistry = {};
-
-          function dispatchEvent(event) {
-            var targetElement = event.target;
-
-            eventRegistry[event.type].forEach(function (entry) {
-              var potentialElements = window.qsa(entry.selector, self.document);
-              var hasMatch = Array.prototype.indexOf.call(potentialElements, targetElement) >= 0;
-
-              if (hasMatch) {
-                entry.handler.call(targetElement, event);
-              }
-            });
-          }
-
-          return function (selector, event, handler) {
-            if (!eventRegistry[event]) {
-              eventRegistry[event] = [];
-              self.root.$on(self.document.documentElement, event, dispatchEvent, true);
-            }
-
-            eventRegistry[event].push({
-              selector: selector,
-              handler: handler
-            });
-          };
-        }());
+        this.$template = qs('#template');
+        this.$properties = qs('.properties');
 
         this.init();
     }
 
     View.prototype.init = function(){
+        var self = this;
         // uses capture phase so the click is first handled by handleToggle, if matches
-        this.delegate('body', 'click', function(){
+        delegate('body', 'click', function(){
           self.toggleActivesOff(null, '.js-action--create');
         }, true);
     };
@@ -87,7 +62,7 @@
             var property = data.property,
                 value = data.value;
 
-            var el = qs('#'+property + ">.value", self.document);
+            var el = qs('#'+property + ">.value");
             el.textContent = value;
           }
         };
@@ -104,7 +79,7 @@
     */
     View.prototype.toggleActivesOff = function(ignoreEl, filter){
       var selector = (typeof filter == 'string' && filter.length) ? filter + '.js-active' : '.js-active';
-      var actives = qsa(selector, this.document);
+      var actives = qsa(selector);
 
       Array.prototype.forEach.call(actives, function(active){
         if (ignoreEl && active.contains(ignoreEl)){
@@ -122,7 +97,7 @@
 
           'toggleEditor': function(){
 
-            self.delegate('.js-action--edit', 'click', function(e){
+            delegate('.js-action--edit', 'click', function(e){
               var target = e.target,
                   isActive = target.classList.contains('js-active');
 
@@ -140,7 +115,7 @@
           },
 
           'createShape': function(e){
-            self.delegate('[data-shape]', 'click', function(e){
+            delegate('[data-shape]', 'click', function(e){
               var target = e.target,
                   parent = $parent(target, 'li'),
                   property = parent.id,
@@ -167,7 +142,7 @@
           },
 
           'createShapeMenu': function(){
-            self.delegate('.js-action--create', 'click', function(e){
+            delegate('.js-action--create', 'click', function(e){
               var target = e.target;
               target.classList.toggle('js-active');
             });

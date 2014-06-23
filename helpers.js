@@ -33,10 +33,12 @@
 			});
 		}
 
-		return function (selector, event, handler) {
+		return function (selector, event, handler, scope) {
+			scope = scope || window;
+
 			if (!eventRegistry[event]) {
 				eventRegistry[event] = [];
-				window.$on(document.documentElement, event, dispatchEvent, true);
+				scope.$on(scope.document.documentElement, event, dispatchEvent, true);
 			}
 
 			eventRegistry[event].push({
