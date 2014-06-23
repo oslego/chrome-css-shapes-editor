@@ -102,7 +102,9 @@
   <script id="template" type="text/x-template">
     <li id="<%= property %>">
       <span class="property"><%= property %></span>:
-      <span class="js-action js-action--edit">edit</span>
+      <span class="js-action js-action--edit"<% if (value.indexOf('(') === -1){ %> disabled <% } %>>edit</span>
+
+      <% if (value.indexOf('(') === -1){ %>
       <span class="js-action js-action--create">create
         <nav>
           <a class="ico ico-circle" data-shape="circle()">circle</a>
@@ -110,101 +112,14 @@
           <a class="ico ico-polygon" data-shape="polygon()">polygon</a>
         </nav>
       </span>
+      <% } %>
       <span class="value"><%= value %></span>;
     </li>
   </script>
 
   <ol class="properties">
-    <!-- filled in dynamically based on selected element's computed style -->
+    <!-- filled in dynamically with #template build from selected element's computed style / shape properties -->
   </ol>
 
-  <script>
-
-  // document.on = document.addEventListener;
-  //
-  // EDITOR_CREATE = "shape:editorcreate";
-  // EDITOR_ON     = "shape:editoron";
-  // EDITOR_OFF    = "shape:editoroff";
-  //
-  // function trigger(eventName, data){
-  //   var event = new CustomEvent(eventName, {"detail": data});
-  //   document.dispatchEvent(event);
-  // }
-  //
-  // /*
-  //   Returns the first ancestor elements which matches the given selector
-  //   starting from the element upwards the DOM tree.
-  // */
-  // Element.prototype.queryAncestor = function(selector){
-  //   var el = this.parentNode;
-  //   while (el !== document){
-  //     if (el.matches(selector)){
-  //       return el;
-  //     }
-  //     el = el.parentNode;
-  //   }
-  //
-  //   return undefined;
-  // }
-  //
-  // document.on('click', function(e){
-  //   var target = e.target,
-  //       dataset = target.dataset,
-  //       parent = target.queryAncestor('li');
-  //
-  //   if (dataset && dataset.action){
-  //     if (dataset.active !== undefined){
-  //       target.removeAttribute('data-active');
-  //
-  //       if (dataset.action == "edit"){
-  //         trigger(EDITOR_OFF, {
-  //           property: parent.id,
-  //           shape: parent.querySelector('.value').textContent
-  //         })
-  //       }
-  //
-  //     } else {
-  //       target.setAttribute('data-active', true);
-  //
-  //       // TODO: turn off any existing editor
-  //       if (dataset.action == "edit"){
-  //         trigger(EDITOR_ON, {
-  //           property: parent.id,
-  //           shape: parent.querySelector('.value').textContent
-  //         })
-  //       }
-  //     }
-  //   }
-  //
-  //   if (dataset && dataset.shape){
-  //
-  //     var edit = parent.querySelector('[data-action="edit"]');
-  //     edit.removeAttribute('disabled');
-  //     edit.setAttribute('data-active', true);
-  //
-  //     var create = parent.querySelector('[data-action="create"]');
-  //     create.setAttribute('disabled', true)
-  //     create.removeAttribute('data-active');
-  //
-  //     var value = parent.querySelector('.value');
-  //     value.innerHTML = dataset.shape;
-  //
-  //     trigger(EDITOR_CREATE, {
-  //       shape: dataset.shape,
-  //       property: parent.id
-  //     });
-  //   }
-  //
-  // })
-  //
-  // document.on(EDITOR_CREATE, function(e){
-  //   console.log(e);
-  // })
-  //
-  // document.on(EDITOR_OFF, function(e){
-  //   console.warn('editor off', e)
-  // })
-
-  </script>
 </body>
 </html>
