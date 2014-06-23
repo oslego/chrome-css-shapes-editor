@@ -99,48 +99,22 @@
 <body>
 
   <script id="template" type="text/x-template">
-    <li id="{{property}}">
-      <span class="property">{{property}}</span>:
-      <span class="js-action-edit" data-state="active">edit</span>
-      <span class="js-action-create" data-state="active">+</span>
-      <nav>
-        <span data-shape="circle">circle</span>
-        <span data-shape="ellipse">ellipse</span>
-        <span data-shape="polygon">polygon</span>
-      </nav>
-      <span class="value">{{value}}</span>;
+    <li id="<%= property %>">
+      <span class="property"><%= property %></span>:
+      <span data-action="edit" disabled>edit</span>
+      <span data-action="create" data-state="active">create
+        <nav>
+          <a class="ico ico-circle" data-shape="circle()">circle</a>
+          <a class="ico ico-ellipse" data-shape="ellipse()">ellipse</a>
+          <a class="ico ico-polygon" data-shape="polygon()">polygon</a>
+        </nav>
+      </span>
+      <span class="value"><%= value %></span>;
     </li>
   </script>
 
   <ol class="properties">
     <!-- filled in dynamically based on selected element's computed style -->
-    <li id="shape-outside">
-      <span class="property">shape-outside</span>:
-      <span class="ico ico-edit" data-action="edit" disabled>edit</span>
-      <span class="ico ico-create" data-action="create">create
-        <nav>
-          <a class="ico ico-circle" data-shape="circle()">circle()</a>
-          <a class="ico ico-ellipse" data-shape="ellipse()">ellipse()</a>
-          <a class="ico ico-polygon" data-shape="polygon()">polygon()</a>
-        </nav>
-      </span>
-
-      <span class="value">none</span>;
-    </li>
-
-    <li id="shape-inside">
-      <span class="property">shape-inside</span>:
-      <span class="ico ico-edit" data-action="edit" disabled>edit</span>
-      <span class="ico ico-create" data-action="create">create
-        <nav>
-          <a class="ico ico-circle" data-shape="circle()">circle()</a>
-          <a class="ico ico-ellipse" data-shape="ellipse()">ellipse()</a>
-          <a class="ico ico-polygon" data-shape="polygon()">polygon()</a>
-        </nav>
-      </span>
-
-      <span class="value">none</span>;
-    </li>
   </ol>
 
   <script>
