@@ -13,9 +13,9 @@
 
 	Model.prototype = new EventManager();
 
-	Model.prototype.read = function (query, callback) {
+	Model.prototype.read = function (id, callback) {
 		callback = callback || function () {};
-    callback(this.storage[query]);
+    callback(this.storage[id]);
 	};
 
   Model.prototype.readAll = function (callback) {

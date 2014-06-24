@@ -37,10 +37,16 @@
 
     View.prototype.init = function(){
         var self = this;
+
         // uses capture phase so the click is first handled by handleToggle, if matches
         delegate('body', 'click', function(){
           self.toggleActivesOff(null, '.js-action--create');
         }, true);
+
+        delegate('.js-action--create', 'click', function(e){
+          var target = e.target;
+          target.classList.toggle('js-active');
+        });
     };
 
     View.prototype.render = function (viewCmd, data) {
@@ -52,7 +58,7 @@
                 html = '';
 
             Object.keys(attrs).forEach(function(key){
-              html += _.template(templateText, {"property": key, "value": attrs[key]});
+              html += _.template(templateText, attrs[key]);
             });
 
             self.$properties.innerHTML = html;
@@ -101,16 +107,17 @@
               var target = e.target,
                   isActive = target.classList.contains('js-active');
 
+              handler({
+                property: $parent(target, 'li').id,
+                enabled: !isActive // visual toggling going up ahead
+              });
+
               if (!isActive){
-                  self.toggleActivesOff(null, '.js-action--edit');
+                self.toggleActivesOff(null, '.js-action--edit');
               }
 
               target.classList.toggle('js-active');
 
-              handler({
-                property: $parent(target, 'li').id,
-                enabled: !isActive
-              });
             });
           },
 
@@ -123,6 +130,12 @@
                   createButton = qs('.js-action--create', parent),
                   editButton = qs('.js-action--edit', parent);
 
+              handler({
+                property: property,
+                value: value,
+                enabled: false
+              });
+
               self.toggleActivesOff();
 
               createButton.setAttribute('disabled', true);
@@ -130,21 +143,6 @@
               editButton.removeAttribute('disabled');
               editButton.dispatchEvent(new MouseEvent('click'));
 
-              // TODO: let live editor setup echo the value
-              self.render("updateValue", {property: property, value: value});
-
-              handler({
-                property: property,
-                value: value
-              });
-
-            });
-          },
-
-          'createShapeMenu': function(){
-            delegate('.js-action--create', 'click', function(e){
-              var target = e.target;
-              target.classList.toggle('js-active');
             });
           }
         };

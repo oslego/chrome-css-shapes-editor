@@ -7,13 +7,25 @@
 
     // build this from $0 (Promise)
     this.storage = {
-      'shape-outside': 'circle()',
-      'clip-path': 'none'
+      'shape-outside': {
+        property: 'shape-outside',
+        value: 'circle()',
+        enabled: false
+      },
+      'clip-path': {
+        property: 'clip-path',
+        value: 'none',
+        enabled: false
+      }
     };
 
     this.model = new app.Model(this.storage);
     this.view = new app.View(root);
     this.controller = new app.Controller(this.model, this.view);
+
+    this.model.on('update', function(data){
+      console.log('lemodelchange', data)
+    });
   }
 
   Extension.prototype.teardown = function(){
@@ -39,7 +51,6 @@
 
     document.body.appendChild(sidebar);
   })();
-
 
   // first, build model from $0
 
