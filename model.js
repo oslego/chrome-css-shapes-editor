@@ -11,6 +11,8 @@
 		this.storage = (storage || {});
 	}
 
+	Model.prototype = new EventManager();
+
 	Model.prototype.read = function (query, callback) {
 		callback = callback || function () {};
     callback(this.storage[query]);
@@ -21,19 +23,24 @@
     callback(this.storage);
   };
 
-	Model.prototype.update = function (id, data, callback) {
-    callback = callback || function () {};
+	Model.prototype.update = function (id, data, silent) {
 		this.storage[id] = data;
 
-    // TODO: trigger update event
-    callback(this.storage);
+		var obj = {};
+		obj[id] = data;
+
+		silent = !!silent || false;
+		if (silent){
+			return;
+		}
+
+		this.trigger('update', obj);
 	};
 
 	Model.prototype.remove = function (id, callback) {
     callback = callback || function () {};
     delete this.storage[id];
 
-    // TODO: trigger remove event
     callback(this.storage);
 	};
 
