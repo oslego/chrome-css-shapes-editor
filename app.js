@@ -2,29 +2,26 @@
 (function () {
   'use strict';
 
+  // supported properties
+  var PROPERTIES = ['shape-outside', '-webkit-clip-path'];
   var ext;
-  function Extension(root) {
 
-    // build this from $0 (Promise)
-    this.storage = {
-      'shape-outside': {
-        property: 'shape-outside',
-        value: 'circle()',
-        enabled: false
-      },
-      'clip-path': {
-        property: 'clip-path',
-        value: 'none',
-        enabled: false
-      }
-    };
+  function Extension(root, data) {
 
-    this.model = new app.Model(this.storage);
+    if (!root){
+      throw new Error('Missing root window for View');
+    }
+
+    if (!data){
+      throw new Error('Missing data for Model');
+    }
+
+    this.model = new app.Model(data);
     this.view = new app.View(root);
     this.controller = new app.Controller(this.model, this.view);
 
     this.model.on('update', function(data){
-      console.log('lemodelchange', data)
+      console.log('ze model changed!', data);
     });
   }
 
@@ -35,28 +32,64 @@
     this.controller = null;
   };
 
-  // run on sidebar show
-  // function setView() {
-  //   todo.controller.setView(document.location.hash);
-  // }
+  function loadSidebar(){
+    return new Promise(function(resolve, reject){
+        var sidebar = document.createElement('iframe');
+        sidebar.src = 'sidebar.html';
 
-  (function(){
-    var sidebar = document.createElement('iframe');
-    sidebar.src = 'sidebar.html';
+        sidebar.addEventListener('load', function(e){
+          resolve(e.target.contentWindow);
+        });
 
-    sidebar.addEventListener('load', function(e){
-      ext = new Extension(e.target.contentWindow);
-      ext.controller.setView();
+        document.body.appendChild(sidebar);
     });
+  }
 
-    document.body.appendChild(sidebar);
-  })();
+  function getSelectedElementData(){
+    return new Promise(function(resolve, reject){
 
-  // first, build model from $0
+      function handleComputedStyle(style){
+        var data = {};
+
+        PROPERTIES.forEach(function(prop){
+          data[prop] = {
+            property: prop,
+            value: style[prop],
+            enabled: false
+          };
+        });
+
+        resolve(data);
+      }
+
+      if (chrome.devtools){
+        chrome.devtools.inspectedWindow.eval("JSON.stringify(window.getComputedStyle($0, null))", handleComputedStyle);
+      } else {
+        handleComputedStyle(window.getComputedStyle(document.querySelector('#test'), null));
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var promises = [loadSidebar(), getSelectedElementData()];
+
+    Promise.all(promises).then(function(results){
+
+        ext = new Extension(results[0], results[1]);
+        ext.controller.setView(); // TODO: run on sidebar.onShow();
+
+      }).catch(function(err){
+
+        console.log(err);
+      });
+  });
+
+
+  // [DONE] first, build model from $0
 
   // setup comm with background.js
 
-  // inject sidebar template (inert)
+  // [DONE] inject sidebar template (inert)
 
   // on sidebar show() -> render UI, setup listeners
 

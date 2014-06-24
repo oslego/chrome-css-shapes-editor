@@ -10,7 +10,6 @@
 	 */
 	function Controller(model, view) {
 		var self = this;
-		self.model = model;
 		self.view = view;
 
 		self.view.bind('toggleEditor', function(editor){
@@ -19,7 +18,7 @@
 
 		self.view.bind('createShape', self.onCreateShape.bind(this));
 
-		self.model.on('update', self.onModelUpdate.bind(this));
+		self.setModel(model);
 	}
 
 	Controller.prototype.toggleEditor = function(property, enabled){
@@ -31,8 +30,6 @@
 			data.enabled = enabled;
 			self.model.update(property, data);
 		});
-
-		// self.model.update(editor.property+".enabled", editor.enabled);
 
 			// cycle through model; see if property changed state
 			// turn on/off live editor
@@ -60,11 +57,8 @@
 		this.model.update(editor.property, payload, silent);
 	};
 
-
 	/**
-	 * Loads and initialises the view
-	 *
-	 * @param {string} '' | 'active' | 'completed'
+	 * Loads and initialises the property list view
 	 */
 	Controller.prototype.setView = function () {
 		var self = this;
@@ -73,6 +67,14 @@
 		});
 	};
 
+	/*
+		Loads model and listens to its 'update' events
+	*/
+	Controller.prototype.setModel = function(model){
+		this.model = null; // release the old model
+		this.model = model;
+		this.model.on('update', this.onModelUpdate.bind(this));
+	};
 
 	// Export to window
 	window.app = window.app || {};
