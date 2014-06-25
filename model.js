@@ -24,12 +24,9 @@
   };
 
 	Model.prototype.update = function (id, data, silent) {
-		var oldData = this.storage[id] || {},
-				response = {};
+		var oldData = this.storage[id] || {};
 
 		this.storage[id] = _.extend(oldData, data);
-
-		response[id] = this.storage[id];
 
 		// prevent triggering message?
 		silent = !!silent || false;
@@ -37,7 +34,7 @@
 			return;
 		}
 
-		this.trigger('update', response);
+		this.trigger('update', this.storage[id]);
 	};
 
 	Model.prototype.remove = function (id, callback) {
