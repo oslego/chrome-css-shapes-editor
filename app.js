@@ -6,6 +6,23 @@
   var PROPERTIES = ['shape-outside', '-webkit-clip-path'];
   var ext;
 
+  // TODO: return to detools port for prod.
+  // var port = chrome.runtime.connect({name: "devtools"});
+  var port = chrome.runtime.connect({name: "page"});
+
+  port.onMessage.addListener(function(msg) {
+    switch (msg.type){
+      case "update":
+        ext.model.update(msg.property, { value: msg.value });
+      break;
+
+      case "remove":
+        console.warn('request to remove');
+      break;
+    }
+  });
+
+
   function Extension(root, data) {
 
     if (!root){
@@ -19,10 +36,6 @@
     this.model = new app.Model(data);
     this.view = new app.View(root);
     this.controller = new app.Controller(this.model, this.view);
-
-    this.model.on('update', function(data){
-      console.log('ze model changed!', data);
-    });
   }
 
   Extension.prototype.teardown = function(){
@@ -87,7 +100,7 @@
 
   // [DONE] first, build model from $0
 
-  // setup comm with background.js
+  // [DONE] setup comm with background.js
 
   // [DONE] inject sidebar template (inert)
 

@@ -1,44 +1,42 @@
-var editor, property, value, port;
+
 // port.onMessage.addListener(function(obj) {
 //   port.postMessage({answer: "Madame"});
 // });
 
+var port = chrome.runtime.connect({name: "page"});
+var editors = {};
+
 function setup(el, property, value){
-    teardown();
+    // teardown();
 
-    port = chrome.runtime.connect({name: "page"});
-
-    editor = new CSSShapesEditor(el, value);
+    var editor = new CSSShapesEditor(el, value);
 
     editor.on('shapechange', function(){
-      var value = this.getCSSValue();
-      editor.target.style[property] = value;
-      port.postMessage({shape: value});
+
+      var message = {
+        type: 'update',
+        property: property,
+        value: this.getCSSValue()
+      };
+
+      port.postMessage(message);
+      editor.target.style[property] = message.value;
+
+      console.log('shapechange', message.value);
     });
 
-    editor.on('ready', function(){
-      console.log('ready!');
-      port.postMessage({shape: value});
-    });
+    editors[property] = editor;
 }
 
-function teardown(){
-    if (!editor){
+function teardown(property){
+    if (!editors[property]){
       return;
     }
 
-    property = undefined;
-    value = undefined;
-    editor.off('shapechange');
-    editor.remove();
-    editor = null;
-    port = null;
-}
+    editors[property].off('shapechange');
+    editors[property].remove();
+    delete editors[property];
+    // TODO: make sure editors[property] is undefined
 
-function toggleTransform(){
-    if (!editor){
-      return;
-    }
-
-    editor.toggleTransformEditor();
+    // TODO: remove on ESC key; send event to app.js
 }

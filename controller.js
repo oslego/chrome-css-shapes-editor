@@ -29,7 +29,15 @@
 		self.model.read(property, function(data){
 			data.enabled = enabled;
 			self.model.update(property, data);
+
+			if (enabled){
+				self.createInlineEditor(property, data.value);
+			} else {
+				self.removeInlineEditor(property);
+			}
+
 		});
+
 
 			// cycle through model; see if property changed state
 			// turn on/off live editor
@@ -55,6 +63,22 @@
 		};
 
 		this.model.update(editor.property, payload, silent);
+	};
+
+	// TODO: trigger 'editorStateChange' event and let app.js handle it.
+	Controller.prototype.createInlineEditor = function(property, value){
+		if (chrome.devtools){
+			chrome.devtools.inspectedWindow.eval('setup($0, "'+ property.toString() +'", "'+ value.toString() +'")',
+					{ useContentScriptContext: true });
+		} else {
+			setup(document.querySelector('#test'), property, value);
+		}
+	};
+
+	// TODO: trigger 'editorStateChange' event and let app.js handle it.
+	Controller.prototype.removeInlineEditor = function(property){
+		// TODO: call inspect window eval.
+		teardown(property);
 	};
 
 	/**
