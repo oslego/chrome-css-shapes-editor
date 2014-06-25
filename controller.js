@@ -64,10 +64,16 @@
 	};
 
 	/*
-		Loads model and listens to its 'update' events
+		Loads model and listens to its 'update' events.
+		Replace any existing model.
 	*/
 	Controller.prototype.setModel = function(model){
-		this.model = null; // release the old model
+
+		if (this.model){
+			this.model.off('update'); // unbind old event handlers
+			this.model = null; // release the old model for garbage collecting
+		}
+
 		this.model = model;
 		this.model.on('update', this.onModelUpdate.bind(this));
 	};

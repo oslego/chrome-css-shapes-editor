@@ -63,6 +63,7 @@
     this.storage = null;
     this.model = null;
     this.view = null;
+    this.controller.off('editorStateChange');
     this.controller = null;
   };
 
