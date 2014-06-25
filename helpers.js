@@ -60,6 +60,27 @@
 		return window.$parent(element.parentNode, tagName);
 	};
 
+	/*
+		Takes a CSS property string and returns a DOM property string.
+		@example: -webkit-shape-inside -> webkitShapeInside
+	*/
+	window.toDOMProperty = function(str){
+		if (typeof str !== 'string'){
+			return;
+		}
+
+		while(str.charAt(0) == '-'){
+			str = str.substr(1);
+		}
+
+		str = str.replace(/-(\w)/gi, function(match, group, index){
+			return group.toUpperCase();
+		});
+
+		return str;
+	};
+
+
 	// Allow for looping on nodes by chaining:
 	// qsa('.foo').forEach(function () {})
 	NodeList.prototype.forEach = Array.prototype.forEach;
