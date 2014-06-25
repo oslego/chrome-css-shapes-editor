@@ -7,22 +7,6 @@
   var PROPERTIES = ['shape-outside', 'shape-inside', '-webkit-clip-path'];
   var ext;
 
-  // TODO: return to detools port for prod.
-  // var port = chrome.runtime.connect({name: "devtools"});
-  var port = chrome.runtime.connect({name: "page"});
-
-  port.onMessage.addListener(function(msg) {
-    switch (msg.type){
-      case "update":
-        ext.model.update(msg.property, { value: msg.value });
-      break;
-
-      case "remove":
-        console.warn('request to remove');
-      break;
-    }
-  });
-
   function Extension(root, data) {
 
     if (!root){
@@ -36,10 +20,49 @@
     this.model = new app.Model(data);
     this.view = new app.View(root);
     this.controller = new app.Controller(this.model, this.view);
-    this.controller.on('editorStateChange', this.handleEditorStateChange);
+
+    this.init();
   }
 
-  Extension.prototype.handleEditorStateChange = function(editor){
+  Extension.prototype.init = function(){
+    var self = this;
+
+    this.controller.on('editorStateChange', this.onEditorStateChange);
+
+    if (chrome.devtools){ // production
+      this.port = chrome.runtime.connect({name: "devtools"});
+    } else { // development
+      this.port = chrome.runtime.connect({name: "page"});
+    }
+
+    this.port.onMessage.addListener(function(msg) {
+      switch (msg.type){
+        case "update":
+          ext.model.update(msg.property, { value: msg.value });
+        break;
+
+        case "remove":
+          console.warn('request to remove');
+        break;
+      }
+    });
+
+    if (chrome.devtools){
+      chrome.devtools.panels.elements.onSelectionChanged.addListener(onSelectedElementChange);
+    }
+  };
+
+  Extension.prototype.onSelectedElementChange = function(){
+    var self = this;
+
+    // TODO: teardown any existing editor
+    getSelectedElementData().then(function(data){
+      self.controller.setModel(new app.Model(data));
+      self.controller.setView();
+    });
+  };
+
+  Extension.prototype.onEditorStateChange = function(editor){
     var property = editor.property,
         value = editor.value,
         enabled = editor.enabled;
@@ -60,7 +83,6 @@
   };
 
   Extension.prototype.teardown = function(){
-    this.storage = null;
     this.model = null;
     this.view = null;
     this.controller.off('editorStateChange');
