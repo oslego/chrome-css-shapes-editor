@@ -2,8 +2,8 @@
 (function () {
   'use strict';
 
-  // supported properties
-  // NOTE: unprefixed clip-path applies only to SVG; use -webkit- prefix for HTMl & SVG
+  // List of CSS properties that accept shape values.
+  // NOTE: unprefixed clip-path applies only to SVG; use -webkit- prefix for SVG & HTML.
   var PROPERTIES = ['shape-outside', 'shape-inside', '-webkit-clip-path'];
   var ext;
 
@@ -23,7 +23,6 @@
     }
   });
 
-
   function Extension(root, data) {
 
     if (!root){
@@ -37,7 +36,28 @@
     this.model = new app.Model(data);
     this.view = new app.View(root);
     this.controller = new app.Controller(this.model, this.view);
+    this.controller.on('editorStateChange', this.handleEditorStateChange);
   }
+
+  Extension.prototype.handleEditorStateChange = function(editor){
+    var property = editor.property,
+        value = editor.value,
+        enabled = editor.enabled;
+
+    if (chrome.devtools){ // production
+      if (enabled){
+        chrome.devtools.inspectedWindow.eval('setup($0, "'+ property.toString() +'", "'+ value.toString() +'")', { useContentScriptContext: true });
+      } else {
+        chrome.devtools.inspectedWindow.eval('teardown("'+ property.toString() +'")', { useContentScriptContext: true });
+      }
+    } else { // development
+      if (enabled){
+        setup(document.querySelector('#test'), property, value);
+      } else {
+        teardown(property);
+      }
+    }
+  };
 
   Extension.prototype.teardown = function(){
     this.storage = null;

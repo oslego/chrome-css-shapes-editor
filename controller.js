@@ -21,6 +21,8 @@
 		self.setModel(model);
 	}
 
+	Controller.prototype = new EventManager();
+
 	Controller.prototype.toggleEditor = function(property, enabled){
 		var self = this;
 
@@ -30,28 +32,14 @@
 			data.enabled = enabled;
 			self.model.update(property, data);
 
-			if (enabled){
-				self.createInlineEditor(property, data.value);
-			} else {
-				self.removeInlineEditor(property);
-			}
-
+			self.trigger('editorStateChange', data);
 		});
-
-
-			// cycle through model; see if property changed state
-			// turn on/off live editor
-
-			// setup other editor if necessary
 	};
 
 	Controller.prototype.onModelUpdate = function (data){
 		console.log('model update:', data);
 
-		var key = Object.keys(data)[0];
-		var payload = data[key];
-
-		this.view.render("updateValue", payload);
+		this.view.render("updateValue", data);
 	};
 
 	Controller.prototype.onCreateShape = function (editor){
@@ -63,22 +51,6 @@
 		};
 
 		this.model.update(editor.property, payload, silent);
-	};
-
-	// TODO: trigger 'editorStateChange' event and let app.js handle it.
-	Controller.prototype.createInlineEditor = function(property, value){
-		if (chrome.devtools){
-			chrome.devtools.inspectedWindow.eval('setup($0, "'+ property.toString() +'", "'+ value.toString() +'")',
-					{ useContentScriptContext: true });
-		} else {
-			setup(document.querySelector('#test'), property, value);
-		}
-	};
-
-	// TODO: trigger 'editorStateChange' event and let app.js handle it.
-	Controller.prototype.removeInlineEditor = function(property){
-		// TODO: call inspect window eval.
-		teardown(property);
 	};
 
 	/**
