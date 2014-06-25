@@ -49,7 +49,7 @@
     });
 
     if (chrome.devtools){
-      chrome.devtools.panels.elements.onSelectionChanged.addListener(onSelectedElementChange);
+      chrome.devtools.panels.elements.onSelectionChanged.addListener(self.onSelectedElementChange);
     }
   };
 
