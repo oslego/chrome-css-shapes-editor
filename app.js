@@ -3,7 +3,8 @@
   'use strict';
 
   // supported properties
-  var PROPERTIES = ['shape-outside', '-webkit-clip-path'];
+  // NOTE: unprefixed clip-path applies only to SVG; use -webkit- prefix for HTMl & SVG
+  var PROPERTIES = ['shape-outside', 'shape-inside', '-webkit-clip-path'];
   var ext;
 
   // TODO: return to detools port for prod.
@@ -65,6 +66,10 @@
         var data = {};
 
         PROPERTIES.forEach(function(prop){
+          if (!style[prop]){
+            console.warn('Property not supported: %s', prop);
+            return;
+          }
           data[prop] = {
             property: prop,
             value: style[prop],
