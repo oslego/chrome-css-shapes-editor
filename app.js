@@ -91,14 +91,29 @@
 
   function loadSidebar(){
     return new Promise(function(resolve, reject){
+      if (chrome.devtools){ // production
+
+        chrome.devtools.panels.elements.createSidebarPane("Shapes",
+          function(sidebar) {
+            sidebar.setPage('sidebar.html');
+            sidebar.setHeight('100vh');
+            sidebar.onShown.addListener(function(contentWindow){
+              resolve(contentWindow);
+            });
+            sidebar.onHidden.addListener(function(){
+              alert('on hidden');
+            });
+        });
+
+      } else { // development
+
         var sidebar = document.createElement('iframe');
         sidebar.src = 'sidebar.html';
-
         sidebar.addEventListener('load', function(e){
           resolve(e.target.contentWindow);
         });
-
         document.body.appendChild(sidebar);
+      }
     });
   }
 
@@ -137,7 +152,7 @@
     Promise.all(promises).then(function(results){
 
         ext = new Extension(results[0], results[1]);
-        ext.controller.setView(); // TODO: run on sidebar.onShow();
+        ext.controller.setView();
 
       }).catch(function(err){
 
@@ -156,7 +171,7 @@
 
   // on sidebar hide() -> empty UI, release listeners, remove live ed
 
-  // on $0 selected -> rebuild model, render UI, remove live ed
+  // [DONE] on $0 selected -> rebuild model, render UI, remove live ed
 
   // on $0 removed -> re-trigger $0 selected
 
