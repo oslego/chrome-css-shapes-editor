@@ -4,7 +4,8 @@
 
   // List of CSS properties that accept shape values.
   // NOTE: unprefixed clip-path applies only to SVG; use -webkit- prefix for SVG & HTML.
-  var PROPERTIES = ['shape-outside', 'shape-inside', '-webkit-clip-path'];
+  var CSS_PROPERTIES = ['shape-outside', 'shape-inside', '-webkit-clip-path'];
+  var DOM_PROPERTIES = CSS_PROPERTIES.map(window.toDOMProperty);
   var ext;
 
   function Extension(root, data) {
@@ -123,14 +124,17 @@
       function handleComputedStyle(style){
         var data = {};
 
-        PROPERTIES.forEach(function(prop){
-          if (!style[prop]){
-            console.warn('Property not supported: %s', prop);
+        style = JSON.parse(style);
+
+        CSS_PROPERTIES.forEach(function(prop, index){
+          var domProp = DOM_PROPERTIES[index];
+
+          if (!style[domProp]){
             return;
           }
           data[prop] = {
             property: prop,
-            value: style[prop],
+            value: style[domProp],
             enabled: false
           };
         });
