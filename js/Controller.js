@@ -26,8 +26,6 @@
 	Controller.prototype.toggleEditor = function(property, enabled){
 		var self = this;
 
-		console.log('toggle editor:', property, enabled);
-
 		self.model.read(property, function(data){
 			data.enabled = enabled;
 			self.model.update(property, data);
@@ -37,8 +35,6 @@
 	};
 
 	Controller.prototype.onModelUpdate = function (data){
-		console.log('model update:', data);
-
 		this.view.render("updateValue", data);
 	};
 

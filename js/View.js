@@ -26,9 +26,6 @@
         window.qsa = function(selector, scope){ return oldqsa(selector, scope || root.document);};
         window.delegate = function(selector, event, handler){ return olddelegate(selector, event, handler, root);};
 
-        this.ENTER_KEY = 13;
-        this.ESCAPE_KEY = 27;
-
         this.$template = qs('#template');
         this.$properties = qs('.properties');
 
