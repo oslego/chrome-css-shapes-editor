@@ -25,6 +25,12 @@ function setup(el, property, value){
       console.log('shapechange', message.value);
     });
 
+    editor.on('ready', function(){
+      // Sometimes, port.postMessage() first call yields an 'impl' error, then it works.
+      // This is a workaround, until I figure out the root cause.
+      port.postMessage({ type: 'handshake' });
+    });
+
     editors[property] = editor;
 }
 
@@ -36,7 +42,6 @@ function remove(property){
     editors[property].off('shapechange');
     editors[property].remove();
     delete editors[property];
-    // TODO: make sure editors[property] is undefined
 
     // TODO: remove on ESC key; send event to app.js
 }
