@@ -28,7 +28,7 @@ function setup(el, property, value){
     editors[property] = editor;
 }
 
-function teardown(property){
+function remove(property){
     if (!editors[property]){
       return;
     }

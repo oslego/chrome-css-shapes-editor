@@ -1,3 +1,4 @@
+/*jslint evil:true*/
 /*global app, $on */
 (function () {
   'use strict';
@@ -28,7 +29,7 @@
   Extension.prototype.init = function(){
     var self = this;
 
-    this.controller.on('editorStateChange', this.onEditorStateChange);
+    this.controller.on('editorStateChange', this.onEditorStateChange.bind(this));
 
     if (chrome.devtools){ // production
       this.port = chrome.runtime.connect({name: "devtools"});
@@ -49,14 +50,19 @@
     });
 
     if (chrome.devtools){
-      chrome.devtools.panels.elements.onSelectionChanged.addListener(self.onSelectedElementChange);
+      chrome.devtools.panels.elements.onSelectionChanged.addListener(function(){
+        self.onSelectedElementChange();
+      });
     }
   };
 
   Extension.prototype.onSelectedElementChange = function(){
     var self = this;
 
-    // TODO: teardown any existing editor
+    if (this.activeEditor){
+      this.removeEditor(this.activeEditor);
+    }
+
     getSelectedElementData().then(function(data){
       self.controller.setModel(new app.Model(data));
       self.controller.setView();
@@ -64,23 +70,31 @@
   };
 
   Extension.prototype.onEditorStateChange = function(editor){
-    var property = editor.property,
-        value = editor.value,
-        enabled = editor.enabled;
-
-    if (chrome.devtools){ // production
-      if (enabled){
-        chrome.devtools.inspectedWindow.eval('setup($0, "'+ property.toString() +'", "'+ value.toString() +'")', { useContentScriptContext: true });
-      } else {
-        chrome.devtools.inspectedWindow.eval('teardown("'+ property.toString() +'")', { useContentScriptContext: true });
-      }
-    } else { // development
-      if (enabled){
-        setup(document.querySelector('#test'), property, value);
-      } else {
-        teardown(property);
-      }
+    if (editor.enabled){
+      this.setupEditor(editor);
+    } else {
+      this.removeEditor(editor);
     }
+  };
+
+  Extension.prototype.setupEditor = function(editor){
+    if (chrome.devtools){
+      chrome.devtools.inspectedWindow.eval('setup($0, "'+ editor.property.toString() +'", "'+ editor.value.toString() +'")', { useContentScriptContext: true });
+    } else {
+      setup(document.querySelector('#test'), editor.property, editor.value);
+    }
+
+    this.activeEditor = editor;
+  };
+
+  Extension.prototype.removeEditor = function(editor){
+    if (chrome.devtools){ // production
+      chrome.devtools.inspectedWindow.eval('remove("'+ editor.property.toString() +'")', { useContentScriptContext: true });
+    } else {             // development
+      remove(editor.property);
+    }
+
+    this.activeEditor = null;
   };
 
   Extension.prototype.teardown = function(){
