@@ -3,57 +3,69 @@
 (function () {
   'use strict';
 
-  // List of CSS properties that accept shape values.
+  // Supported CSS properties that accept shape values.
   // NOTE: unprefixed clip-path applies only to SVG; use -webkit- prefix for SVG & HTML.
   var CSS_PROPERTIES = ['shape-outside', 'shape-inside', '-webkit-clip-path'];
+
+  // DOM equivalent of CSS properties used to query getComputedStyle() result.
   var DOM_PROPERTIES = CSS_PROPERTIES.map(window.toDOMProperty);
+
+  // extension instance
   var ext;
 
-  function Extension(root, data) {
+  function Extension(root) {
+    var self = this;
 
     if (!root){
       throw new Error('Missing root window for View');
     }
 
-    if (!data){
-      throw new Error('Missing data for Model');
-    }
+    self.getSelectedElementStyles().then(function(data){
+      self.view = new app.View(root);
+      self.model = new app.Model(data);
 
-    this.model = new app.Model(data);
-    this.view = new app.View(root);
-    this.controller = new app.Controller(this.model, this.view);
+      self.controller = new app.Controller(self.model, self.view);
+      self.controller.on('editorStateChange', function(editor){
+        self.onEditorStateChange.call(self, editor);
+      });
 
-    this.init();
+      self.controller.setView();
+    });
+
+    chrome.devtools.panels.elements.onSelectionChanged.addListener(function(){
+      self.onSelectedElementChange();
+    });
+
+    self.init();
   }
 
   Extension.prototype.init = function(){
     var self = this;
 
-    this.controller.on('editorStateChange', this.onEditorStateChange.bind(this));
-
-    if (chrome.devtools){ // production
-      this.port = chrome.runtime.connect({name: "devtools"});
-    } else { // development
-      this.port = chrome.runtime.connect({name: "page"});
-    }
-
+    this.port = chrome.runtime.connect({name: "devtools"});
     this.port.onMessage.addListener(function(msg) {
+
       switch (msg.type){
         case "update":
-          ext.model.update(msg.property, { value: msg.value });
+          self.model.update(msg.property, { value: msg.value });
         break;
 
         case "remove":
-          console.warn('request to remove');
+          // self.model.update(msg.property, { enabled: false });
         break;
       }
     });
+  };
 
-    if (chrome.devtools){
-      chrome.devtools.panels.elements.onSelectionChanged.addListener(function(){
-        self.onSelectedElementChange();
-      });
+  Extension.prototype.teardown = function(){
+    if (this.activeEditor){
+      this.removeEditor(this.activeEditor);
     }
+
+    this.controller.off('editorStateChange');
+    this.controller = null;
+    this.model = null;
+    this.view = null;
   };
 
   Extension.prototype.onSelectedElementChange = function(){
@@ -63,7 +75,7 @@
       this.removeEditor(this.activeEditor);
     }
 
-    getSelectedElementData().then(function(data){
+    self.getSelectedElementStyles().then(function(data){
       self.controller.setModel(new app.Model(data));
       self.controller.setView();
     });
@@ -78,64 +90,19 @@
   };
 
   Extension.prototype.setupEditor = function(editor){
-    if (chrome.devtools){
-      chrome.devtools.inspectedWindow.eval('setup($0, "'+ editor.property.toString() +'", "'+ editor.value.toString() +'")', { useContentScriptContext: true });
-    } else {
-      setup(document.querySelector('#test'), editor.property, editor.value);
-    }
-
+    chrome.devtools.inspectedWindow.eval('setup($0, "'+ editor.property.toString() +'", "'+ editor.value.toString() +'")', { useContentScriptContext: true });
     this.activeEditor = editor;
   };
 
   Extension.prototype.removeEditor = function(editor){
-    if (chrome.devtools){ // production
-      chrome.devtools.inspectedWindow.eval('remove("'+ editor.property.toString() +'")', { useContentScriptContext: true });
-    } else {             // development
-      remove(editor.property);
-    }
-
+    chrome.devtools.inspectedWindow.eval('remove("'+ editor.property.toString() +'")', { useContentScriptContext: true });
     this.activeEditor = null;
   };
 
-  Extension.prototype.teardown = function(){
-    this.model = null;
-    this.view = null;
-    this.controller.off('editorStateChange');
-    this.controller = null;
-  };
-
-  function loadSidebar(){
-    return new Promise(function(resolve, reject){
-      if (chrome.devtools){ // production
-
-        chrome.devtools.panels.elements.createSidebarPane("Shapes",
-          function(sidebar) {
-            sidebar.setPage('sidebar.html');
-            sidebar.setHeight('100vh');
-            sidebar.onShown.addListener(function(contentWindow){
-              resolve(contentWindow);
-            });
-            sidebar.onHidden.addListener(function(){
-              alert('on hidden');
-            });
-        });
-
-      } else { // development
-
-        var sidebar = document.createElement('iframe');
-        sidebar.src = 'sidebar.html';
-        sidebar.addEventListener('load', function(e){
-          resolve(e.target.contentWindow);
-        });
-        document.body.appendChild(sidebar);
-      }
-    });
-  }
-
-  function getSelectedElementData(){
+  Extension.prototype.getSelectedElementStyles = function(){
     return new Promise(function(resolve, reject){
 
-      function handleComputedStyle(style){
+      function extractStyles(style){
         var data = {};
 
         style = JSON.parse(style);
@@ -156,41 +123,26 @@
         resolve(data);
       }
 
-      if (chrome.devtools){
-        chrome.devtools.inspectedWindow.eval("JSON.stringify(window.getComputedStyle($0, null))", handleComputedStyle);
-      } else {
-        handleComputedStyle(window.getComputedStyle(document.querySelector('#test'), null));
-      }
+      chrome.devtools.inspectedWindow.eval("JSON.stringify(window.getComputedStyle($0, null))", extractStyles);
     });
-  }
+  };
 
   document.addEventListener('DOMContentLoaded', function(){
-    var promises = [loadSidebar(), getSelectedElementData()];
+    chrome.devtools.panels.elements.createSidebarPane("Shapes",
+      function(sidebar) {
+        sidebar.setPage('sidebar.html');
+        sidebar.setHeight('100vh');
 
-    Promise.all(promises).then(function(results){
+        sidebar.onShown.addListener(function(contentWindow){
+          ext = new Extension(contentWindow);
+        });
 
-        ext = new Extension(results[0], results[1]);
-        ext.controller.setView();
-
-      }).catch(function(err){
-
-        throw err;
-      });
+        sidebar.onHidden.addListener(function(){
+          alert('on hidden');
+          ext.teardown();
+          ext = null;
+        });
+    });
   });
-
-
-  // [DONE] first, build model from $0
-
-  // [DONE] setup comm with background.js
-
-  // [DONE] inject sidebar template (inert)
-
-  // on sidebar show() -> render UI, setup listeners
-
-  // on sidebar hide() -> empty UI, release listeners, remove live ed
-
-  // [DONE] on $0 selected -> rebuild model, render UI, remove live ed
-
-  // on $0 removed -> re-trigger $0 selected
 
 })();
