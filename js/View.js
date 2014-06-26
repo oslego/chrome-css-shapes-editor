@@ -36,15 +36,18 @@
     View.prototype.init = function(){
         var self = this;
 
-        // uses capture phase so the click is first handled by handleToggle, if matches
-        this.root.document.addEventListener('click', function(){
-          self.toggleActivesOff(null, '.js-action--create');
-        }, true);
-
         delegate('.js-action--create', 'click', function(e){
-          var target = e.target;
-          target.classList.toggle('js-active');
+          self.closeActiveMenus();
+          e.target.classList.toggle('js-active');
         });
+    };
+
+    View.prototype.closeActiveMenus = function(){
+      var actives = qsa('.js-action--create.js-active');
+
+      Array.prototype.forEach.call(actives, function(item){
+        item.classList.remove('js-active');
+      });
     };
 
     View.prototype.render = function (viewCmd, data) {
@@ -78,18 +81,13 @@
       Finds elements in the active state, class="js-active",
       and simulates a click to toggle to their inactive state.
 
-      @param {Node} ignoreEl Ignore active match if it's an ancestor of this element
       @param {String} filter Selector used to filter active elements
     */
-    View.prototype.toggleActivesOff = function(ignoreEl, filter){
+    View.prototype.toggleOffActive = function(filter){
       var selector = (typeof filter == 'string' && filter.length) ? filter + '.js-active' : '.js-active';
       var actives = qsa(selector);
 
       Array.prototype.forEach.call(actives, function(active){
-        if (ignoreEl && active.contains(ignoreEl)){
-          return;
-        }
-
         // fake click triggers 'toggleEditor' and informs Controller.js
         active.dispatchEvent(new MouseEvent('click'));
       });
@@ -105,16 +103,18 @@
               var target = e.target,
                   isActive = target.classList.contains('js-active');
 
-              if (!isActive){
-                self.toggleActivesOff(null, '.js-action--edit');
+              // turn off other editors
+              if (isActive === false){
+                self.toggleOffActive('.js-action--edit');
               }
 
-              target.classList.toggle('js-active');
+              self.closeActiveMenus();
 
               handler({
                 property: $parent(target, 'li').id,
-                enabled: !isActive // visual toggling going up ahead
+                enabled: !isActive // toggling the state
               });
+              target.classList.toggle('js-active');
 
             });
           },
@@ -134,13 +134,9 @@
                 enabled: false
               });
 
-              self.toggleActivesOff();
-
               createButton.setAttribute('disabled', true);
-
               editButton.removeAttribute('disabled');
               editButton.dispatchEvent(new MouseEvent('click'));
-
             });
           }
         };
