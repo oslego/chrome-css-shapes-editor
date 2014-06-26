@@ -20,30 +20,10 @@
       throw new Error('Missing root window for View');
     }
 
-    self.getSelectedElementStyles().then(function(data){
-      self.view = new app.View(root);
-      self.model = new app.Model(data);
+    self.view = new app.View(root);
 
-      self.controller = new app.Controller(self.model, self.view);
-      self.controller.on('editorStateChange', function(editor){
-        self.onEditorStateChange.call(self, editor);
-      });
-
-      self.controller.setView();
-    });
-
-    chrome.devtools.panels.elements.onSelectionChanged.addListener(function(){
-      self.onSelectedElementChange();
-    });
-
-    self.init();
-  }
-
-  Extension.prototype.init = function(){
-    var self = this;
-
-    this.port = chrome.runtime.connect({name: "devtools"});
-    this.port.onMessage.addListener(function(msg) {
+    self.port = chrome.runtime.connect({name: "devtools"});
+    self.port.onMessage.addListener(function(msg) {
 
       switch (msg.type){
         case "update":
@@ -55,6 +35,33 @@
         break;
       }
     });
+  }
+
+  Extension.prototype.init = function(){
+    var self = this;
+
+    self.getSelectedElementStyles().then(function(data){
+
+      self.model = new app.Model(data);
+
+      self.controller = new app.Controller(self.model, self.view);
+      self.controller.on('editorStateChange', function(editor){
+        self.onEditorStateChange.call(self, editor);
+      });
+
+      self.controller.setView();
+    });
+
+    // store a reference to the 'this'-bound event handler so we can
+    // release it with removeListener() in Extension.teardown()
+    // oh, JavaScript!
+    self.boundSelectedElementChange = function(scope){
+      return function(){
+        scope.onSelectedElementChange.call(scope);
+      };
+    }(self);
+
+    chrome.devtools.panels.elements.onSelectionChanged.addListener(self.boundSelectedElementChange);
   };
 
   Extension.prototype.teardown = function(){
@@ -65,7 +72,8 @@
     this.controller.off('editorStateChange');
     this.controller = null;
     this.model = null;
-    this.view = null;
+
+    chrome.devtools.panels.elements.onSelectionChanged.removeListener(this.boundSelectedElementChange);
   };
 
   Extension.prototype.onSelectedElementChange = function(){
@@ -133,14 +141,17 @@
         sidebar.setPage('sidebar.html');
         sidebar.setHeight('100vh');
 
+        var setupOnce = _.once(function(contentWindow){
+            return new Extension(contentWindow);
+        });
+
         sidebar.onShown.addListener(function(contentWindow){
-          ext = new Extension(contentWindow);
+          ext = setupOnce(contentWindow);
+          ext.init();
         });
 
         sidebar.onHidden.addListener(function(){
-          alert('on hidden');
           ext.teardown();
-          ext = null;
         });
     });
   });
