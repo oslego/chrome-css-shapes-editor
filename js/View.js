@@ -26,6 +26,7 @@
         window.qsa = function(selector, scope){ return oldqsa(selector, scope || root.document);};
         window.delegate = function(selector, event, handler){ return olddelegate(selector, event, handler, root);};
 
+        this.root = root;
         this.$template = qs('#template');
         this.$properties = qs('.properties');
 
@@ -36,7 +37,7 @@
         var self = this;
 
         // uses capture phase so the click is first handled by handleToggle, if matches
-        delegate('body', 'click', function(){
+        this.root.document.addEventListener('click', function(){
           self.toggleActivesOff(null, '.js-action--create');
         }, true);
 
@@ -104,16 +105,16 @@
               var target = e.target,
                   isActive = target.classList.contains('js-active');
 
-              handler({
-                property: $parent(target, 'li').id,
-                enabled: !isActive // visual toggling going up ahead
-              });
-
               if (!isActive){
                 self.toggleActivesOff(null, '.js-action--edit');
               }
 
               target.classList.toggle('js-active');
+
+              handler({
+                property: $parent(target, 'li').id,
+                enabled: !isActive // visual toggling going up ahead
+              });
 
             });
           },
