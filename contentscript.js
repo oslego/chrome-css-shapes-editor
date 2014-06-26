@@ -1,15 +1,10 @@
-
-// port.onMessage.addListener(function(obj) {
-//   port.postMessage({answer: "Madame"});
-// });
-
-var port = chrome.runtime.connect({name: "page"});
-var editors = {};
+var port, editors = {};
 
 function setup(el, property, value){
     // teardown();
 
     var editor = new CSSShapesEditor(el, value);
+    port = port || chrome.runtime.connect({name: "page"});
 
     editor.on('shapechange', function(){
 
@@ -23,12 +18,6 @@ function setup(el, property, value){
       editor.target.style[property] = message.value;
 
       console.log('shapechange', message.value);
-    });
-
-    editor.on('ready', function(){
-      // Sometimes, port.postMessage() first call yields an 'impl' error, then it works.
-      // This is a workaround, until I figure out the root cause.
-      port.postMessage({ type: 'handshake' });
     });
 
     editors[property] = editor;

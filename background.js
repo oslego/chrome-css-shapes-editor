@@ -9,18 +9,16 @@ chrome.runtime.onConnect.addListener(function(port) {
 
   if (port.name == 'page'){
     pagePort = port;
+    pagePort.onMessage.addListener(function(data){
+      devtoolsPort.postMessage(data);
+    });
   }
 
   if (port.name == 'devtools'){
     devtoolsPort = port;
+    devtoolsPort.onMessage.addListener(function(data){
+      pagePort.postMessage(data);
+    });
   }
-
-  pagePort.onMessage.addListener(function(data){
-    devtoolsPort.postMessage(data);
-  });
-
-  devtoolsPort.onMessage.addListener(function(data){
-    pagePort.postMessage(data);
-  });
 
 });
