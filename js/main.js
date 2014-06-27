@@ -49,6 +49,7 @@
         self.onEditorStateChange.call(self, editor);
       });
 
+      self.view.init();
       self.controller.setView();
     });
 
@@ -70,6 +71,7 @@
     }
 
     this.controller.off('editorStateChange');
+    this.view.teardown();
     this.controller = null;
     this.model = null;
 

@@ -1,36 +1,36 @@
-/*global qs, qsa, $on, $parent, $live, _ */
+/*global qs, qsa, $parent, $events, _ */
 
 (function (window) {
     'use strict';
 
     /**
-     * View that abstracts away the browser's DOM completely.
-     * It has two simple entry points:
+     * View that abstracts away the browser's DOM.
+     * It has two main entry points:
      *
      *   - bind(eventName, handler)
-     *     Takes a todo application event and registers the handler
-     *   - render(command, parameterObject)
+     *     Takes an application event and registers the handler
+     *   - render(command, dataObject)
      *     Renders the given command with the options
      */
     function View(root) {
-        var oldqs = window.qs,
-            oldqsa = window.qsa,
-            olddelegate = window.$live;
+        var _qs = window.qs,
+            _qsa = window.qsa,
+            _delegate = window.$events.delegate,
+            _undelegate = window.$events.undelegate;
 
-        root.$on = window.$on.bind(root.document);
         root.qs = window.qs.bind(root.document);
         root.qsa = window.qsa.bind(root.document);
 
-        // re-scope helpers for injected window
-        window.qs = function(selector, scope){ return oldqs(selector, scope || root.document);};
-        window.qsa = function(selector, scope){ return oldqsa(selector, scope || root.document);};
-        window.delegate = function(selector, event, handler){ return olddelegate(selector, event, handler, root);};
+        // re-scope helpers to sidebar 'window' context
+        window.qs = function(selector, scope){ return _qs(selector, scope || root.document);};
+        window.qsa = function(selector, scope){ return _qsa(selector, scope || root.document);};
+        window.delegate = function(selector, event, handler){ return _delegate(selector, event, handler, root);};
+        window.undelegate = function(selector, event, handler){ return _undelegate(selector, event, handler, root);};
 
-        this.root = root;
         this.$template = qs('#template');
         this.$properties = qs('.properties');
 
-        this.init();
+        // this.init();
     }
 
     View.prototype.init = function(){
@@ -40,6 +40,15 @@
           self.closeActiveMenus();
           e.target.classList.toggle('js-active');
         });
+    };
+
+    View.prototype.teardown = function(){
+
+      // remove all event listeners
+      undelegate();
+
+      // cleanup page html
+      this.render('empty');
     };
 
     View.prototype.closeActiveMenus = function(){
@@ -71,6 +80,10 @@
 
             var el = qs('#'+property + ">.value");
             el.textContent = value;
+          },
+
+          empty: function(){
+            self.$properties.innerHTML = '';
           }
         };
 
