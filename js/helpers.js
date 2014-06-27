@@ -2,7 +2,7 @@
 (function (window) {
 	'use strict';
 
-	// Get element(s) by CSS selector:
+	// Get element by CSS selector:
 	window.qs = function (selector, scope) {
 		return (scope || document).querySelector(selector);
 	};
@@ -10,14 +10,10 @@
 		return (scope || document).querySelectorAll(selector);
 	};
 
-	// addEventListener wrapper:
-	window.$on = function (target, type, callback, useCapture) {
-		target.addEventListener(type, callback, !!useCapture);
-	};
-
-	// Register events on elements that may or may not exist yet:
-	// $live('div a', 'click', function (event) {});
-	window.$live = (function () {
+	// Delegate and undelegate events for elements that may or may not exist yet:
+	// $events.delegate('div a', 'click', function (event) {});
+	// $events.undelegate('div a', 'click');
+	window.$events = (function () {
 		var eventRegistry = {};
 
 		function dispatchEvent(event) {
@@ -33,18 +29,35 @@
 			});
 		}
 
-		return function (selector, event, handler, scope) {
-			scope = scope || window;
+		return {
+			delegate: function (selector, event, handler, scope) {
+				scope = scope || window;
 
-			if (!eventRegistry[event]) {
-				eventRegistry[event] = [];
-				scope.$on(scope.document.documentElement, event, dispatchEvent, true);
+				if (!eventRegistry[event]) {
+					eventRegistry[event] = [];
+					scope.document.documentElement.addEventListener(event, dispatchEvent, true);
+				}
+
+				eventRegistry[event].push({
+					selector: selector,
+					handler: handler
+				});
+			},
+
+			undelegate: function (selector, event, handler, scope){
+				scope = scope || window;
+
+				// remove listeners for everything;
+				if (!selector && !event && !handler){
+					var events = Object.keys(eventRegistry);
+					events.forEach(function(event){
+						scope.document.documentElement.removeEventListener(event, dispatchEvent, true);
+						delete eventRegistry[event];
+					});
+				}
+
+				// TODO implement per-case undelegation
 			}
-
-			eventRegistry[event].push({
-				selector: selector,
-				handler: handler
-			});
 		};
 	}());
 
