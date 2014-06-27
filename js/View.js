@@ -30,7 +30,7 @@
         this.$template = qs('#template');
         this.$properties = qs('.properties');
 
-        // this.init();
+        this.init();
     }
 
     View.prototype.init = function(){

@@ -13,6 +13,27 @@
   // extension instance
   var ext;
 
+  // messaging port to background page (background.js)
+  var port = chrome.runtime.connect({name: "devtools"});
+
+  port.onMessage.addListener(function(msg) {
+    if (!ext){
+      console.warn('how did you get here? ext:', ext);
+      return;
+    }
+
+    switch (msg.type){
+      case "update":
+        ext.model.update(msg.property, { value: msg.value });
+      break;
+
+      case "remove":
+        // ext.model.update(msg.property, { enabled: false });
+      break;
+    }
+  });
+
+
   function Extension(root) {
     var self = this;
 
@@ -20,36 +41,13 @@
       throw new Error('Missing root window for View');
     }
 
-    self.view = new app.View(root);
-
-    self.port = chrome.runtime.connect({name: "devtools"});
-    self.port.onMessage.addListener(function(msg) {
-
-      switch (msg.type){
-        case "update":
-          self.model.update(msg.property, { value: msg.value });
-        break;
-
-        case "remove":
-          // self.model.update(msg.property, { enabled: false });
-        break;
-      }
-    });
-  }
-
-  Extension.prototype.init = function(){
-    var self = this;
-
     self.getSelectedElementStyles().then(function(data){
-
+      self.view = new app.View(root);
       self.model = new app.Model(data);
-
       self.controller = new app.Controller(self.model, self.view);
       self.controller.on('editorStateChange', function(editor){
         self.onEditorStateChange.call(self, editor);
       });
-
-      self.view.init();
       self.controller.setView();
     });
 
@@ -63,17 +61,18 @@
     }(self);
 
     chrome.devtools.panels.elements.onSelectionChanged.addListener(self.boundSelectedElementChange);
-  };
+  }
 
   Extension.prototype.teardown = function(){
     if (this.activeEditor){
       this.removeEditor(this.activeEditor);
     }
 
-    this.controller.off('editorStateChange');
     this.view.teardown();
-    this.controller = null;
+    this.view = null;
     this.model = null;
+    this.controller.off('editorStateChange');
+    this.controller = null;
 
     chrome.devtools.panels.elements.onSelectionChanged.removeListener(this.boundSelectedElementChange);
   };
@@ -143,17 +142,13 @@
         sidebar.setPage('sidebar.html');
         sidebar.setHeight('100vh');
 
-        var setupOnce = _.once(function(contentWindow){
-            return new Extension(contentWindow);
-        });
-
         sidebar.onShown.addListener(function(contentWindow){
-          ext = setupOnce(contentWindow);
-          ext.init();
+          ext = new Extension(contentWindow);
         });
 
         sidebar.onHidden.addListener(function(){
           ext.teardown();
+          ext = undefined;
         });
     });
   });
