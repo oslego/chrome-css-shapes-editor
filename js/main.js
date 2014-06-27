@@ -108,6 +108,13 @@
     this.activeEditor = null;
   };
 
+  /*
+    Returns a Promise that resolves with the CSS Shapes properties
+    from the computed style of the currently selected element($0).
+
+    @see CSS_PROPETIES
+    @return {Promise}
+  */
   Extension.prototype.getSelectedElementStyles = function(){
     return new Promise(function(resolve, reject){
 
@@ -124,8 +131,7 @@
           }
           data[prop] = {
             property: prop,
-            value: style[domProp],
-            enabled: false
+            value: style[domProp]
           };
         });
 
