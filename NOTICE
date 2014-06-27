@@ -1,0 +1,22 @@
+CSS Shapes Editor extension for Google Chrome DevTools
+
+Copyright 2014 Adobe Systems Incorporated.
+
+This software is licensed under the Apache License, Version 2.0 (see LICENSE file).
+It uses the following third party libraries that may have licenses differing from
+that of the CSS Shapes Editor DevTools extension itself.
+
+- underscore (http://underscorejs.org/)
+
+  Copyright (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative
+  Reporters & Editors.
+
+  MIT License:
+  https://github.com/jashkenas/underscore/blob/master/LICENSE
+
+- CSS Shapes Editor library (https://github.com/adobe-webplatform/css-shapes-editor)
+
+  Copyright (c) 2014 Adobe Systems Incorporated.
+
+  Apache License, Version 2.0:
+  https://github.com/adobe-webplatform/css-shapes-editor/blob/master/LICENSE.md
