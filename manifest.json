@@ -2,6 +2,8 @@
   "manifest_version": 2,
   "name": "CSS Shapes Editor",
   "version": "1.0.0",
+  "author": "Razvan Caliman <rcaliman@adobe.com>",
+  "minimum_chrome_version": "37.0.0",
   "description": "Adds a GUI for editing CSS Shapes values like polygon(), circle() or ellipse()",
   "devtools_page": "devtools.html",
   "background": {
