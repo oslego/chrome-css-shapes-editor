@@ -45,6 +45,24 @@ function remove(property){
     editors[property].off('shapechange');
     editors[property].remove();
     delete editors[property];
-
-    // TODO: remove on ESC key; send event to app.js
 }
+
+document.addEventListener('keyup', function(e){
+  var T_KEY   = 84,
+      ESC_KEY = 27;
+
+  switch (e.keyCode){
+
+    // Workaround for toggling free transform on polygon() editors
+    // TODO: implement as UI component in polygon() editor
+    case T_KEY:
+      Object.keys(editors).forEach(function(property){
+        var value = editors[property].getCSSValue();
+        if (value.indexOf('polygon') !== -1){
+          editors[property].toggleFreeTransform();
+        }
+      });
+    break;
+
+  }
+});
