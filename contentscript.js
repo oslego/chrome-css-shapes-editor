@@ -64,5 +64,16 @@ document.addEventListener('keyup', function(e){
       });
     break;
 
+    case ESC_KEY:
+      Object.keys(editors).forEach(function(property){
+        var message = {
+          type: 'remove',
+          property: property
+        };
+
+        port.postMessage(message);
+        remove(property);
+      });
+    break;
   }
 });

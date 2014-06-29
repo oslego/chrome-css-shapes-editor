@@ -42,7 +42,7 @@
       break;
 
       case "remove":
-        // ext.model.update(msg.property, { enabled: false });
+        ext.model.update(msg.property, { enabled: false });
       break;
     }
   });
