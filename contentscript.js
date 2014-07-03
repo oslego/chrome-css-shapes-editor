@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var port, editors = {};
+var port, timeout,
+    delay = 100,
+    editors = {};
 
 function setup(el, property, value){
     // teardown();
@@ -28,10 +30,17 @@ function setup(el, property, value){
         value: this.getCSSValue()
       };
 
-      port.postMessage(message);
       editor.target.style[property] = message.value;
 
-      console.log('shapechange', message.value);
+      // throttle communication to extension
+      if (!timeout){
+        timeout = window.setTimeout(function(){
+          port.postMessage(message);
+          window.clearTimeout(timeout);
+          timeout = undefined;
+        }, delay);
+      }
+
     });
 
     editors[property] = editor;
