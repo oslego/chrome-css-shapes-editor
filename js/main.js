@@ -30,24 +30,6 @@
   // messaging port to background page (background.js)
   var port = chrome.runtime.connect({name: "devtools"});
 
-  port.onMessage.addListener(function(msg) {
-    if (!ext){
-      console.warn('how did you get here? ext:', ext);
-      return;
-    }
-
-    switch (msg.type){
-      case "update":
-        ext.model.update(msg.property, { value: msg.value });
-      break;
-
-      case "remove":
-        ext.model.update(msg.property, { enabled: false });
-      break;
-    }
-  });
-
-
   function Extension(root) {
     var self = this;
 
@@ -156,19 +138,39 @@
     });
   };
 
+  function handleMessage(msg){
+    if (!ext){
+      console.warn('how did you get here? ext:', ext);
+      return;
+    }
+
+    switch (msg.type){
+      case "update":
+        ext.model.update(msg.property, { value: msg.value });
+      break;
+
+      case "remove":
+        ext.model.update(msg.property, { enabled: false });
+      break;
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function(){
     chrome.devtools.panels.elements.createSidebarPane("Shapes",
       function(sidebar) {
+
         sidebar.setPage('sidebar.html');
         sidebar.setHeight('100vh');
 
         sidebar.onShown.addListener(function(contentWindow){
           ext = new Extension(contentWindow);
+          port.onMessage.addListener(handleMessage);
         });
 
         sidebar.onHidden.addListener(function(){
           ext.teardown();
           ext = undefined;
+          port.onMessage.removeListener(handleMessage);
         });
     });
   });
