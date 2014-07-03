@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// css-shapes-editor 0.5.4
+// css-shapes-editor 0.6.0
 //
 // Editor for CSS Shapes in the browser.
 //
-// build: 2014-05-16
+// build: 2014-07-03
 
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -1013,8 +1013,8 @@ define('CSSUtils',[],function(){
             break;
 
         case 'padding-box':
-            box.top = topPadding;
-            box.left = leftPadding;
+            box.top = topBorder;
+            box.left = leftBorder;
             box.width = width - leftBorder - rightBorder;
             box.height = height - topBorder - bottomBorder;
             break;
@@ -8177,6 +8177,196 @@ define('Editor',['eve', 'CSSUtils', 'snap'], function(eve, CSSUtils, Snap){
   }
 }.call(this));
 
+// Copyright (c) 2014 Adobe Systems Incorporated. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+/*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
+/*global define */
+
+define('ToolBar',['lodash', 'snap'], function(_, Snap){
+    
+
+    var _defaults = {
+        toolSize: 24
+    };
+
+    var _defaultTool = {
+        name: "tool",
+        activeFill: 'red',
+        inactiveFill: 'gray',
+        onActivate: function () { /* 'this' scoped to ToolBar instance */ },
+        onDeactivate: function () { /* 'this' scoped to ToolBar instance */ },
+    };
+
+    function ToolBar(options) {
+        this.config = _.extend({}, _defaults, options);
+
+        this.type = this.config.type;
+
+        this.paper = this.config.paper || new Snap('100%','100%').paper;
+
+        this.body = this.paper.g().drag();
+
+        this.tools = {};
+
+        // click handler with 'this' bound to ToolBar instance scope;
+        this.onToolClick = (function(scope){
+            return function(e){
+                // 'this' is ToolBar instance
+
+                var target = e.target,
+                    tool = this.tools[target.id];
+
+                if (!tool){
+                    return;
+                }
+
+                // if undefined, it's falsy and that's ok; continue
+                if (tool.el.data('selected')){
+                    return;
+                }
+
+                // toggle off all tools
+                Object.keys(this.tools).forEach(function(id){
+                    this.deactivate(id);
+                }.bind(this));
+
+                // toggle on this tool
+                this.activate(target.id);
+
+            }.bind(scope);
+        })(this);
+    }
+
+    ToolBar.prototype.activate = function(id){
+        if (!this.tools[id]){
+            return;
+        }
+
+        var tool = this.tools[id];
+        tool.el.data('selected', true);
+        tool.el.attr({fill: tool.activeFill});
+        tool.onActivate.call(this);
+    };
+
+    ToolBar.prototype.deactivate = function(id){
+        if (!this.tools[id]){
+            return;
+        }
+
+        var tool = this.tools[id];
+
+        // only deactivate if already active
+        if (!tool.el.data('selected')){
+            return;
+        }
+
+        tool.el.data('selected', false);
+        tool.el.attr({fill: tool.inactiveFill});
+        tool.onDeactivate.call(this);
+    };
+
+    ToolBar.prototype.add = function(id, options){
+        if (this.tools[id]){
+            throw new Error('Tool with id "' + id + '" already exists.');
+        }
+
+        // TODO: rename config to tool
+        var config = _.extend({}, _defaultTool, options),
+            size = this.config.toolSize;
+
+        config.el = this.paper.rect();
+        config.el.attr({
+            width: size,
+            height: size,
+            id: id,
+            fill: "red",
+            x: 0,
+            y: Object.keys(this.tools).length * size,
+        });
+
+        config.el.attr({
+            fill: config.inactiveFill
+        });
+
+        config.el.click(this.onToolClick.bind(this));
+
+        this.tools[id] = config;
+
+        [config.inactiveFill, config.activeFill].forEach(function(fill){
+            if (fill && fill.type && fill.type === 'pattern'){
+                fill.attr({
+                    width: size,
+                    height: size
+                });
+            }
+        });
+
+        this.height(Object.keys(this.tools).length * size);
+        this.body.append(config.el);
+        this.body.transform('translate(100, 100)');
+    };
+
+    ToolBar.prototype.remove = function(id){
+        if (!this.tools[id]){
+            return;
+        }
+
+        delete this.tools[id];
+    };
+
+    ToolBar.prototype.position = function(pos){
+        var oldX = this.body.attr('x'),
+            oldY = this.body.attr('y'),
+            newPos;
+
+        if (!pos || typeof pos !== 'object'){
+            return { x: oldX, y: oldY };
+        }
+
+        newPos = {
+            x: (typeof pos.x === 'number') ? pos.x : oldX,
+            y: (typeof pos.y === 'number') ? pos.y : oldY
+        };
+
+        this.body.transform('translate('+newPos.x+','+newPos.y+')');
+
+        return newPos;
+    };
+
+    ToolBar.prototype.dimension = function(type, value){
+        var oldValue = this.body.getBBox()[type];
+
+        if (!value || typeof value !== 'number' || value === oldValue){
+            return oldValue;
+        } else {
+            this.body.attr(type, value);
+            return value;
+        }
+    };
+
+    ToolBar.prototype.height = function(value){
+        return this.dimension("height", value);
+    };
+
+    ToolBar.prototype.width = function(value){
+        return this.dimension("width", value);
+    };
+
+    return ToolBar;
+});
+
 /*
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -9322,7 +9512,7 @@ define('Editor',['eve', 'CSSUtils', 'snap'], function(eve, CSSUtils, Snap){
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
 /*global define */
 
-define('PolygonEditor',['Editor', 'CSSUtils', 'lodash', 'snap', 'snap.freeTransform', 'snap.plugins'], function(Editor, CSSUtils, _, Snap, freeTransform){
+define('PolygonEditor',['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap.freeTransform', 'snap.plugins'], function(Editor, CSSUtils, ToolBar, _, Snap, freeTransform){
     
 
     var _defaults = {
@@ -9418,9 +9608,130 @@ define('PolygonEditor',['Editor', 'CSSUtils', 'lodash', 'snap', 'snap.freeTransf
         // Apply decorations for the shape
         Editor.prototype.setupShapeDecoration.call(this, this.config.path);
 
+        this.setupToolBar();
+
         window.addEventListener('resize', this.refresh.bind(this));
         this.holder.addEventListener('mousedown', this.onMouseDown.bind(this));
         this.holder.addEventListener('dblclick', this.onDblClick.bind(this));
+    };
+
+    /*
+        Setup a visual toolbar with buttons to toggle between point editing
+        and free transform (move/scale/rotate) polygons.
+
+        The toolbar is positioned automatically near the bounding box of the shape,
+        but is user-draggable to anywhere on the screen.
+    */
+    PolygonEditor.prototype.setupToolBar = function(){
+        var self = this;
+
+        function autoPosition(){
+            /*jshint validthis:true */
+            // 'this' is PolygonEditor context
+
+            if (!this.toolbar || !this.shape){
+                return;
+            }
+
+            // remove handler; run only once for first position
+            this.off('shapechange', autoPosition);
+
+            var shapeBox = this.shape.getBBox(),
+                toolSize = this.toolbar.config.toolSize,
+                maxX = window.innerWidth - this.toolbar.width() * 2, // don't fall off the edge of the screen
+                minX = 0, // don't put toolbar under the left edge of the screen
+                minY = 0, // don't put toolbar higher than the top of the screen
+                pos = {
+                    x: minX,
+                    y: Math.max(minY, shapeBox.y)
+                };
+
+            // try to keep the toolbar away from the shape bounding box, but still on-screen
+            if (shapeBox.x > this.toolbar.width() * 2){
+                pos.x = shapeBox.x - this.toolbar.width() * 2;
+            } else {
+                pos.x = Math.min(shapeBox.x + shapeBox.width + this.toolbar.width(), maxX);
+            }
+
+            this.toolbar.position(pos);
+        }
+
+        function colorizeActive(el){
+            var ico = el.clone(),
+                accent = 'white',
+                base = 'rgba(0, 162, 255, 1)';
+
+            ico.selectAll('.ico-bg').attr({
+                fill: base,
+                stroke: accent
+            });
+
+            ico.selectAll('.ico-detail').attr({
+                fill: accent,
+                stroke: base
+            });
+
+            return ico;
+        }
+
+        function colorizeInactive(el){
+            var ico = el.clone(),
+                accent = 'gray',
+                base = 'lightgray';
+
+            ico.selectAll('.ico-bg').attr({
+                fill: base,
+                stroke: accent,
+                "stroke-width": 7
+            });
+
+            ico.selectAll('.ico-detail').attr({
+                fill: accent
+            });
+
+            return ico;
+        }
+
+        var icoMR = Snap.parse('<rect height="100" width="100" class="ico-bg" fill="#fff" stroke="#000"/><g><polygon class="ico-detail" fill="#000" points="55.125,60.25 55.125,75.625 65.375,75.625 50,91 34.625,75.625 44.875,75.625 44.875,60.25 "/><polygon class="ico-detail" fill="#000" points="39.75,55.125 24.375001907348633,55.125 24.375001907348633,65.375 9,50 24.375001907348633,34.625 24.375001907348633,44.875 39.75,44.875 "/><polygon class="ico-detail" fill="#000" points="44.875,39.75 44.875,24.375001907348633 34.625,24.375001907348633 50,9 65.375,24.375001907348633 55.125,24.375001907348633 55.125,39.75 "/><polygon class="ico-detail" fill="#000" points="60.25,44.875 75.625,44.875 75.625,34.625 91,50 75.625,65.375 75.625,55.125 60.25,55.125 "/></g>');
+        var icoEP = Snap.parse('<rect height="100" width="100" class="ico-bg" fill="#fff"/><polygon class="ico-detail" fill="#000" points="73.64800262451172,71.30729675292969 56.48988342285156,49.05104446411133 68.54986572265625,39.75430679321289 24.352001190185547,17.625 34.506996154785156,65.99810409545898 46.56697463989258,56.70136260986328 63.723533630371094,78.95684051513672" />');
+
+        icoMR = this.paper.g().append(icoMR).toDefs();
+        icoEP = this.paper.g().append(icoEP).toDefs();
+
+        this.toolbar = new ToolBar({
+            paper: this.paper
+        });
+
+        // mock-toggle for editing points (move/add/remove)
+        // no handlers required; this is on autmatically, unless free-transform is on (see below)
+        this.toolbar.add('tool-edit-points', { name: "Edit Points",
+            inactiveFill: (function(){
+                return colorizeInactive(icoEP).pattern();
+            })(),
+            activeFill: (function(){
+                return colorizeActive(icoEP).pattern();
+            })()
+        });
+
+        // toggle for shape free-transform behavior (move/rotate/scale)
+        this.toolbar.add('tool-free-transform', {name: "Move, Scale & Rotate Shape",
+            onActivate: function(){
+                self.turnOnFreeTransform();
+            },
+            onDeactivate: function(){
+                self.turnOffFreeTransform();
+            },
+            inactiveFill: (function(){
+                return colorizeInactive(icoMR).pattern();
+            })(),
+            activeFill: (function(){
+                return colorizeActive(icoMR).pattern();
+            })()
+        });
+
+        this.toolbar.activate('tool-edit-points');
+
+        this.on('shapechange', autoPosition);
     };
 
     PolygonEditor.prototype.setupCoordinates = function(){

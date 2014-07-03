@@ -200,8 +200,8 @@ define(function(){
             break;
 
         case 'padding-box':
-            box.top = topPadding;
-            box.left = leftPadding;
+            box.top = topBorder;
+            box.left = leftBorder;
             box.width = width - leftBorder - rightBorder;
             box.height = height - topBorder - bottomBorder;
             break;
