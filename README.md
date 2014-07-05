@@ -8,9 +8,8 @@ Chrome DevTools extension for live on-screen editing of CSS Shapes property valu
 
  First, clone this repository:
 
-   ```
-   git clone git@github.com:oslego/chrome-css-shapes-editor.git
-   ```
+    git clone git@github.com:oslego/chrome-css-shapes-editor.git
+
  Then, open Google Chrome (min version 37, check `chrome://version/`)
    - Navigate to `chrome://extensions`
    - Toggle on "Developer mode" checkbox
