@@ -43,6 +43,7 @@
 
         this.$template = qs('#template');
         this.$properties = qs('.properties');
+        this.$support = qs('.js-support');
 
         this.init();
     }
@@ -76,7 +77,7 @@
     View.prototype.render = function (viewCmd, data) {
         var self = this;
         var viewCommands = {
-          showProperties: function () {
+          showProperties: function(){
             var attrs = data,
                 templateText = self.$template.textContent,
                 html = '';
@@ -98,6 +99,11 @@
 
           empty: function(){
             self.$properties.innerHTML = '';
+          },
+
+          showSupportWarning: function(){
+            self.$support.style.display = 'block';
+            self.$properties.style.display = 'none';
           }
         };
 

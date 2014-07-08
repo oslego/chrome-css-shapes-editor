@@ -63,13 +63,20 @@
 		this.model.update(editor.property, payload, silent);
 	};
 
-	/**
-	 * Loads and initialises the property list view
-	 */
+	/*
+		Loads and initializes the property list view
+		or the support warning view if none of the properties are supported.
+	*/
 	Controller.prototype.setView = function () {
 		var self = this;
 		self.model.readAll(function(data){
-			self.view.render('showProperties', data);
+			var props = Object.keys(data);
+			if (props.length){
+				self.view.render('showProperties', data);
+			}
+			else{
+				self.view.render('showSupportWarning', data);
+			}
 		});
 	};
 

@@ -11,7 +11,7 @@
 
   .properties{
     box-sizing: border-box;
-    padding: 2px 4px;
+    padding: 13px 4px 2px;
     list-style: none;
     color: rgb(48, 57, 66);
   }
@@ -95,6 +95,14 @@
     z-index: 2;
   }
 
+  .warning{
+    background: #fcffd5;
+    padding: 1em;
+    line-height: 1.5em;
+    height: 100%;
+    display: none;
+  }
+
 </style>
 </head>
 <body>
@@ -116,6 +124,11 @@
       <span class="value"><%= value %></span>;
     </li>
   </script>
+
+  <div class="warning js-support">
+    It looks like this browser does not support CSS Shapes.<br >
+    Learn about <a href="https://github.com/oslego/chrome-css-shapes-editor/wiki/CSS-Shapes-Feature-Support" target="_blank">feature support</a>.
+  </div>
 
   <ol class="properties">
     <!-- filled in dynamically with #template build from selected element's computed style / shape properties -->
