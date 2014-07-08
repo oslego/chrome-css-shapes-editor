@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-(function (window) {
+(function(window){
 	'use strict';
 
 	/**
@@ -22,7 +22,7 @@
 	 * @param {object} model The model instance
 	 * @param {object} view The view instance
 	 */
-	function Controller(model, view) {
+	function Controller(model, view){
 		var self = this;
 		self.view = view;
 
@@ -48,11 +48,11 @@
 		});
 	};
 
-	Controller.prototype.onModelUpdate = function (data){
+	Controller.prototype.onModelUpdate = function(data){
 		this.view.render("updateValue", data);
 	};
 
-	Controller.prototype.onCreateShape = function (editor){
+	Controller.prototype.onCreateShape = function(editor){
 		var silent = true; // do not trigger 'update' event
 		var payload = {
 			value: editor.value,
@@ -67,7 +67,7 @@
 		Loads and initializes the property list view
 		or the support warning view if none of the properties are supported.
 	*/
-	Controller.prototype.setView = function () {
+	Controller.prototype.setView = function(){
 		var self = this;
 		self.model.readAll(function(data){
 			var props = Object.keys(data);

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-(function (window) {
+(function(window){
   'use strict';
 
   /*
@@ -26,7 +26,7 @@
     this.handlers = {};
   }
 
-  EventManager.prototype.on = function(event, handler, context) {
+  EventManager.prototype.on = function(event, handler, context){
     if (this.handlers[event] === undefined){
       this.handlers[event] = [];
     }
@@ -37,7 +37,7 @@
     });
   };
 
-  EventManager.prototype.off = function(event, fn) {
+  EventManager.prototype.off = function(event, fn){
     var handlers = this.handlers[event];
 
     if (!handlers || !handlers.length){
@@ -59,7 +59,7 @@
   };
 
 
-  EventManager.prototype.trigger = function(event, data) {
+  EventManager.prototype.trigger = function(event, data){
     var handlers = this.handlers[event];
 
     if (!handlers || !handlers.length){

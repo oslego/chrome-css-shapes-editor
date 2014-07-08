@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-(function (window) {
+(function(window){
 	'use strict';
 
 	/**
@@ -21,23 +21,23 @@
 	 * @constructor
 	 * @param {object} storage A reference to the client side storage class
 	 */
-	function Model(storage) {
+	function Model(storage){
 		this.storage = (storage || {});
 	}
 
 	Model.prototype = new EventManager();
 
-	Model.prototype.read = function (id, callback) {
-		callback = callback || function () {};
+	Model.prototype.read = function(id, callback){
+		callback = callback || function(){};
     callback(this.storage[id]);
 	};
 
-  Model.prototype.readAll = function (callback) {
-    callback = callback || function () {};
+  Model.prototype.readAll = function(callback){
+    callback = callback || function(){};
     callback(this.storage);
   };
 
-	Model.prototype.update = function (id, data, silent) {
+	Model.prototype.update = function(id, data, silent){
 		var oldData = this.storage[id] || {};
 
 		this.storage[id] = _.extend(oldData, data);
@@ -51,8 +51,8 @@
 		this.trigger('update', this.storage[id]);
 	};
 
-	Model.prototype.remove = function (id, callback) {
-    callback = callback || function () {};
+	Model.prototype.remove = function(id, callback){
+    callback = callback || function(){};
     delete this.storage[id];
 
     callback(this.storage);

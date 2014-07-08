@@ -30,7 +30,7 @@
   // messaging port to background page (background.js)
   var port = chrome.runtime.connect({name: "devtools"});
 
-  function Extension(root) {
+  function Extension(root){
     var self = this;
 
     if (!root){
@@ -156,7 +156,7 @@
 
   document.addEventListener('DOMContentLoaded', function(){
     chrome.devtools.panels.elements.createSidebarPane("Shapes",
-      function(sidebar) {
+      function(sidebar){
 
         sidebar.setPage('sidebar.html');
 

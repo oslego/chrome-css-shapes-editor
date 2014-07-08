@@ -14,7 +14,7 @@
 
 /*global qs, qsa, $parent, $events, _ */
 
-(function (window) {
+(function(window){
     'use strict';
 
     /**
@@ -26,7 +26,7 @@
      *   - render(command, dataObject)
      *     Renders the given command with the options
      */
-    function View(root) {
+    function View(root){
         var _qs = window.qs,
             _qsa = window.qsa,
             _delegate = window.$events.delegate,
@@ -74,7 +74,7 @@
       });
     };
 
-    View.prototype.render = function (viewCmd, data) {
+    View.prototype.render = function(viewCmd, data){
         var self = this;
         var viewCommands = {
           showProperties: function(){
@@ -126,7 +126,7 @@
       });
     };
 
-    View.prototype.bind = function (event, handler) {
+    View.prototype.bind = function(event, handler){
         var self = this;
         var events = {
 
