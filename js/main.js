@@ -160,7 +160,6 @@
       function(sidebar) {
 
         sidebar.setPage('sidebar.html');
-        sidebar.setHeight('100vh');
 
         sidebar.onShown.addListener(function(contentWindow){
           ext = new Extension(contentWindow);
