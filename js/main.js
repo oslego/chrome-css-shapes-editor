@@ -140,7 +140,6 @@
 
   function handleMessage(msg){
     if (!ext){
-      console.warn('how did you get here? ext:', ext);
       return;
     }
 
