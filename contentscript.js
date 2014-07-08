@@ -17,7 +17,6 @@ var port, timeout,
     editors = {};
 
 function setup(el, property, value){
-    // teardown();
 
     var editor = new CSSShapesEditor(el, value);
     port = port || chrome.runtime.connect({name: "page"});
@@ -32,7 +31,7 @@ function setup(el, property, value){
 
       editor.target.style[property] = message.value;
 
-      // throttle communication to extension
+      // throttle messages to extension
       if (!timeout){
         timeout = window.setTimeout(function(){
           port.postMessage(message);
@@ -57,21 +56,9 @@ function remove(property){
 }
 
 document.addEventListener('keyup', function(e){
-  var T_KEY   = 84,
-      ESC_KEY = 27;
+  var ESC_KEY = 27;
 
   switch (e.keyCode){
-
-    // Workaround for toggling free transform on polygon() editors
-    // TODO: implement as UI component in polygon() editor
-    case T_KEY:
-      Object.keys(editors).forEach(function(property){
-        var value = editors[property].getCSSValue();
-        if (value.indexOf('polygon') !== -1){
-          editors[property].toggleFreeTransform();
-        }
-      });
-    break;
 
     case ESC_KEY:
       Object.keys(editors).forEach(function(property){
