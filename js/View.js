@@ -41,6 +41,7 @@
         window.delegate = function(selector, event, handler){ return _delegate(selector, event, handler, root);};
         window.undelegate = function(selector, event, handler){ return _undelegate(selector, event, handler, root);};
 
+        this.root = root;
         this.$template = qs('#template');
         this.$properties = qs('.properties');
         this.$support = qs('.js-support');
@@ -51,9 +52,14 @@
     View.prototype.init = function(){
         var self = this;
 
+        // any click that propagates up to the document should close the active 'create' menus
+        this.root.document.addEventListener('click', this.closeActiveMenus);
+
         delegate('.js-action--create', 'click', function(e){
-          self.closeActiveMenus();
+          // prevent the catch-all document.addEventListener to react
+          e.stopImmediatePropagation();
           e.target.classList.toggle('js-active');
+          self.closeActiveMenus(e.target);
         });
     };
 
@@ -62,14 +68,22 @@
       // remove all event listeners
       undelegate();
 
+      // remove catch-all listener
+      this.root.document.removeEventListener('click', this.closeActiveMenus);
+
       // cleanup page html
       this.render('empty');
     };
 
-    View.prototype.closeActiveMenus = function(){
+    View.prototype.closeActiveMenus = function(ignore){
+
       var actives = qsa('.js-action--create.js-active');
 
       Array.prototype.forEach.call(actives, function(item){
+        if (ignore && ignore == item){
+          return;
+        }
+        
         item.classList.remove('js-active');
       });
     };
@@ -140,8 +154,6 @@
               if (isActive === false){
                 self.toggleOffActive('.js-action--edit');
               }
-
-              self.closeActiveMenus();
 
               handler({
                 property: $parent(target, 'li').id,
