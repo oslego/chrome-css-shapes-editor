@@ -29,6 +29,11 @@ Chrome DevTools extension for live on-screen editing of CSS Shapes property valu
   - click "edit" again to remove the editor
 
 
+### Sample content
+
+Use with the [CSS Shapes Espresso demo](https://oslego.github.io/css-shapes-espresso) ([source](https://github.com/oslego/css-shapes-espresso)), or learn [how to create](http://alistapart.com/article/css-shapes-101) your own sample.
+
+
 ### Known limitations
 
 - Manually editing code in the _Shapes_ sidebar, like in _Styles_, is not yet available.
