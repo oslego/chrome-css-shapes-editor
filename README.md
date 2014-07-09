@@ -4,6 +4,10 @@ Chrome DevTools extension for live on-screen editing of CSS Shapes property valu
 
 ![Screenshot](./screenshot.png)
 
+### Demo
+
+https://www.youtube.com/watch?v=ZxD44LTKTuQ
+
 ### How to install
 
  First, clone this repository:
