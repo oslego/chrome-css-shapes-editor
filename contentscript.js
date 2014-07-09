@@ -17,8 +17,23 @@ var port, timeout,
     editors = {};
 
 function setup(el, property, value){
+    var options = {},
+        editor;
 
-    var editor = new CSSShapesEditor(el, value);
+    switch (property) {
+      case "shape-inside":
+      case "-webkit-shape-inside":
+          options.defaultRefBox = "content-box";
+          break;
+      case "clip-path":
+      case "-webkit-clip-path":
+          options.defaultRefBox = "border-box";
+          break;
+      default:
+          options.defaultRefBox = "margin-box";
+    }
+
+    editor = new CSSShapesEditor(el, value, options);
     port = port || chrome.runtime.connect({name: "page"});
 
     editor.on('shapechange', function(){
