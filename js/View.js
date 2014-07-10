@@ -83,7 +83,7 @@
         if (ignore && ignore == item){
           return;
         }
-        
+
         item.classList.remove('js-active');
       });
     };
@@ -101,6 +101,9 @@
             });
 
             self.$properties.innerHTML = html;
+
+            // toggle off support warning, in case it was ever on.
+            self.$support.style.display = 'none';
           },
 
           updateValue: function(){
@@ -117,7 +120,6 @@
 
           showSupportWarning: function(){
             self.$support.style.display = 'block';
-            self.$properties.style.display = 'none';
           }
         };
 

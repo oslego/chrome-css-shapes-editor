@@ -122,7 +122,13 @@
         CSS_PROPERTIES.forEach(function(prop, index){
           var domProp = DOM_PROPERTIES[index];
 
-          if (!style[domProp]){
+          /*
+            1. If the property isn't supported it won't show up in the computed styles.
+            2. Sometimes (!), when switching between elements, the computed style obj is filled with blanks.
+               The browser will do its thing, then trigger another chrome.devtools.panels.elements.onSelectionChanged
+               event shortly after, and then the computed style object is sane. That's the reason for the second condition.
+          */
+          if (!style[domProp] || style[domProp] == ""){
             return;
           }
           data[prop] = {
