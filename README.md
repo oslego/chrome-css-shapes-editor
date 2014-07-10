@@ -10,11 +10,8 @@ https://www.youtube.com/watch?v=ZxD44LTKTuQ
 
 ### How to install
 
- First, clone this repository:
-
-    git clone git@github.com:oslego/chrome-css-shapes-editor.git
-
- Then, open Google Chrome (min version 37, check `chrome://version/` or [download Canary](https://www.google.co.uk/intl/en/chrome/browser/canary.html))
+ 1. Clone this repository.
+ 2. Open Google Chrome (min version 37, check `chrome://version/` or [download Canary](https://www.google.co.uk/intl/en/chrome/browser/canary.html))
    - Navigate to `chrome://extensions`
    - Toggle on "Developer mode" checkbox
    - Click "Load unpacked extension"
