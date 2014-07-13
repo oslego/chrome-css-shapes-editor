@@ -1,6 +1,6 @@
 # CSS Shapes Editor
 
-JavaScript library for interactive editing of CSS Shapes values like `polygon()`, `circle()` and `ellipse()` right in the browser.
+JavaScript library for interactive editing of CSS Shapes values right in the browser. It works functional values like `polygon()`, `circle()` and `ellipse()`.
 
 ## Demo
 
@@ -10,18 +10,22 @@ See the `demo/` folder for examples.
 
 Load `dist/CSSShapesEditor.js` into the page:
 
-    <srcipt src="dist/CSSShapesEditor.js"></srcipt>
+```js
+<script src="dist/CSSShapesEditor.js"></script>
+```
 
-Setup the editor on an element to edit a CSS shape value. An interactive editor for the shape value will be drawn on top of the element.
+Setup the editor to edit a CSS shape value of an element. An interactive editor for the shape is drawn on top of the element.
 
-    var element = document.querySelector('#element');
-    var shape = window.getComputedStyle(element)['shape-outside'];
-    var editor = CSSShapesEditor(element, shape);
+```js
+var element = document.querySelector('#element');
+var shape = window.getComputedStyle(element)['shape-outside'];
+var editor = CSSShapesEditor(element, shape);
 
-    editor.on('shapechange', function(){
-      // update the CSS shape value on the element
-      element.style['shape-outside'] = editor.getCSSValue();
-    })
+editor.on('shapechange', function(){
+  // update the CSS shape value on the element
+  element.style['shape-outside'] = editor.getCSSValue();
+})
+```
 
 
 Supported shape values:
@@ -32,53 +36,68 @@ Supported shape values:
 
 Create a new shape from scratch by passing a shape declaration with no coordinates.
 
-    var editor = CSSShapesEditor(element, 'polygon()');
+```js
+var editor = CSSShapesEditor(element, 'polygon()');
+```
 
 ## Events
 
 The `"ready"` event is dispatched after the editor was initialized
 
-    editor.on('ready', function(){
-      // editor is ready to work with
-    })
+```js
+editor.on('ready', function(){
+  // editor is ready to work with
+})
+```
 
 The `"shapechange"` event is dispatched after the shape was changed in the editor
 
-    editor.on('shapechange', function(){
-      // update the CSS shape value on the element
-      element.style['shape-outside'] = editor.getCSSValue();
-    })
+```js
+editor.on('shapechange', function(){
+  // update the CSS shape value on the element
+  element.style['shape-outside'] = editor.getCSSValue();
+})
+```
 
 The `"removed"` event is dispatched after the editor has been turned off and removed by using `editor.remove()`.
 
-    editor.on('removed', function(){
-      // editor is gone; do other clean-up
-    })
+```js
+editor.on('removed', function(){
+  // editor is gone; do other clean-up
+})
+```
 
 ## API  
 
-Turn off editor and remove if from the page. **Unsaved changes will be lost.**
+Get the CSS shape value as a string to use in a stylesheet:
 
-    editor.remove()
-
-Get the CSS shape value as text for use in a stylesheet:
-
-    editor.getCSSValue()
+```js
+editor.getCSSValue()
+```
 
 Programmatically update the shape editor with a new shape value:
 
-    editor.update("circle(50% at center)")
+```js
+editor.update("circle(50% at center)")
+```
 
 Toggle the free-transform editor (scale, move, rotate) for the shape:
 
-    editor.toggleFreeTransform();
+```js
+editor.toggleFreeTransform();
+```
 
+Turn off editor and remove if from the page. **Unsaved changes will be lost.**
+
+```js
+editor.remove()
+```
 
 ## Contributing
 
-### Requirements:
+Your system needs:
 
-  - [node.js](http://nodejs.org/)
+  - [Node.JS](http://nodejs.org/)
   - [Grunt](http://gruntjs.com/)
 
 ### Setup dev environment
@@ -97,7 +116,7 @@ Build output goes into `dist/`. Do not edit source in `dist/`, it gets replaced 
 
 ### Test
 
-Add tests to `test/spec/`. Run tests with Testem:
+Add tests to `test/spec/`. Run tests with [Testem](https://github.com/airportyh/testem):
 
     $ testem
 
@@ -105,4 +124,18 @@ Testem uses the configuration found in `testem.json`
 
 ## License
 
-Apache 2.0 See [LICENSE.md](./LICENSE.md)
+Apache 2.0. See [LICENSE.md](./LICENSE.md)
+
+## Thanks
+
+The work of many people has contributed, both directly and indirectly, to building the CSS Shapes Editor library:
+
+- [Razvan Caliman](https://github.com/oslego)
+- [Bear Travis](https://github.com/betravis)
+- [Laurence Mclister](https://github.com/lmclister)
+- [Hans Muller](https://github.com/hansmuller)
+- [Lawrence Hsu](https://github.com/larz0)
+- [Dmitry Baranovskiy](https://github.com/DmitryBaranovskiy) for creating [Snap.svg](http://snapsvg.io/)
+- [Elbert Alias](https://github.com/elbertf) for creating [Raphael.FreeTransform ](https://github.com/ElbertF/Raphael.FreeTransform)
+
+and many, many others. Thank you!
