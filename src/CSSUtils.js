@@ -125,38 +125,6 @@ define(function(){
     }
 
     /*
-      Returns the content box layout (relative to the border box)
-    */
-    function getContentBoxOf(element) {
-
-        var width = element.offsetWidth;
-        var height = element.offsetHeight;
-
-        var style = getComputedStyle(element);
-
-        var leftBorder = parseFloat(style.borderLeftWidth);
-        var rightBorder = parseFloat(style.borderRightWidth);
-        var topBorder = parseFloat(style.borderTopWidth);
-        var bottomBorder = parseFloat(style.borderBottomWidth);
-
-        var leftPadding = parseFloat(style.paddingLeft);
-        var rightPadding = parseFloat(style.paddingRight);
-        var topPadding = parseFloat(style.paddingTop);
-        var bottomPadding = parseFloat(style.paddingBottom);
-
-        // TODO: what happens if box-sizing is not content-box?
-        // seems like at least shape-outside vary...
-        return {
-
-            top: topBorder + topPadding,
-            left: leftBorder + leftPadding,
-            width: width - leftBorder - leftPadding - rightPadding - rightBorder,
-            height: height - topBorder - topPadding - bottomPadding - topBorder
-
-        };
-    }
-
-    /*
       Returns coordinates and dimensions for an element's given box type.
       Boxes are relative to the element's border-box.
 
@@ -359,7 +327,6 @@ define(function(){
         return {
             'convertToPixels': convertToPixels,
             'convertFromPixels': convertFromPixels,
-            'getContentBoxOf': getContentBoxOf,
             'getOriginCoords': getOriginCoords,
             'getBox': getBox
         };

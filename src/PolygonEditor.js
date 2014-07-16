@@ -75,6 +75,8 @@ define(['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap.freeTransform',
 
         this.setup();
 
+        this.setupToolBar();
+
         this.update(this.value);
     }
 
@@ -88,7 +90,7 @@ define(['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap.freeTransform',
 
         /*
             Sets up: this.holder, this.paper, this.snap, this.offsets
-            Called manually so you have the option to implement a different drawing surface
+            Called manually so you have the option to implement a different dring surface
         */
         Editor.prototype.setup.call(this);
 
@@ -110,8 +112,6 @@ define(['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap.freeTransform',
 
         // Apply decorations for the shape
         Editor.prototype.setupShapeDecoration.call(this, this.config.path);
-
-        this.setupToolBar();
 
         window.addEventListener('resize', this.refresh.bind(this));
         this.holder.addEventListener('mousedown', this.onMouseDown.bind(this));
@@ -363,7 +363,7 @@ define(['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap.freeTransform',
             throw new TypeError('inferShapeFromElement() \n Expected HTMLElement, got: ' + typeof element + ' ' + element);
         }
 
-        var box = CSSUtils.getContentBoxOf(element);
+        var box = CSSUtils.getBox(element, this.defaultRefBox);
 
         // TODO: also infer unit values
         var coords = [
@@ -405,7 +405,7 @@ define(['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap.freeTransform',
             xCoord = CSSUtils.convertFromPixels(x, vertex.xUnit, element, { isHeightRelated: false, boxType: refBox });
             yCoord = CSSUtils.convertFromPixels(y, vertex.yUnit, element, { isHeightRelated: true, boxType: refBox });
 
-            // return space-separted pair
+            // return space-separated pair
             return [xCoord, yCoord].join(' ');
         });
 
