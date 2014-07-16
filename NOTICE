@@ -14,6 +14,13 @@ that of the CSS Shapes Editor DevTools extension itself.
   MIT License:
   https://github.com/jashkenas/underscore/blob/master/LICENSE
 
+- helpers.js from TodoMVC (http://todomvc.com/)
+
+  Copyright (c) Addy Osmani, Sindre Sorhus, Pascal Hartig, Stephen Sawchuk.
+
+  MIT License:
+  https://github.com/tastejs/todomvc/blob/gh-pages/license.md
+
 - CSS Shapes Editor library (https://github.com/adobe-webplatform/css-shapes-editor)
 
   Copyright (c) 2014 Adobe Systems Incorporated.

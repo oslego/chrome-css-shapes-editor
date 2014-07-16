@@ -1,1 +1,0 @@
-- Mutation Observer for element style change echo to Extension
