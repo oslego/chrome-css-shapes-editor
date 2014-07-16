@@ -36,12 +36,12 @@ function setup(el, property, value){
     editor = new CSSShapesEditor(el, value, options);
     port = port || chrome.runtime.connect({name: "page"});
 
-    editor.on('shapechange', function(){
+    function onShapeChange(){
 
       var message = {
         type: 'update',
         property: property,
-        value: this.getCSSValue()
+        value: editor.getCSSValue()
       };
 
       editor.target.style[property] = message.value;
@@ -54,8 +54,11 @@ function setup(el, property, value){
           timeout = undefined;
         }, delay);
       }
+    }
 
-    });
+    editor.on('shapechange', onShapeChange);
+
+    editor.on('ready', onShapeChange)
 
     editors[property] = editor;
 }
@@ -66,6 +69,7 @@ function remove(property){
     }
 
     editors[property].off('shapechange');
+    editors[property].off('ready');
     editors[property].remove();
     delete editors[property];
 }

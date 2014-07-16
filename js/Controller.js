@@ -27,7 +27,7 @@
 		self.view = view;
 
 		self.view.bind('toggleEditor', function(editor){
-			self.toggleEditor(editor.property, editor.enabled);
+			self.onToggleEditor(editor.property, editor.enabled);
 		});
 
 		self.view.bind('createShape', self.onCreateShape.bind(this));
@@ -37,7 +37,7 @@
 
 	Controller.prototype = new EventManager();
 
-	Controller.prototype.toggleEditor = function(property, enabled){
+	Controller.prototype.onToggleEditor = function(property, enabled){
 		var self = this;
 
 		self.model.read(property, function(data){
@@ -48,7 +48,7 @@
 		});
 	};
 
-	Controller.prototype.onModelUpdate = function(data){
+	Controller.prototype.onUpdateModel = function(data){
 		this.view.render("updateValue", data);
 	};
 
@@ -92,7 +92,7 @@
 		}
 
 		this.model = model;
-		this.model.on('update', this.onModelUpdate.bind(this));
+		this.model.on('update', this.onUpdateModel.bind(this));
 	};
 
 	// Export to window

@@ -111,17 +111,14 @@
   <script id="template" type="text/x-template">
     <li id="<%= property %>">
       <span class="property"><%= property %></span>:
-      <span class="js-action js-action--edit"<% if (value.indexOf('(') === -1){ %> disabled <% } %>>edit</span>
-
-      <% if (value.indexOf('(') === -1){ %>
       <span class="js-action js-action--create">create
         <nav>
           <a class="ico ico-circle" data-shape="circle()">circle</a>
           <a class="ico ico-ellipse" data-shape="ellipse()">ellipse</a>
           <a class="ico ico-polygon" data-shape="polygon()">polygon</a>
         </nav>
-      </span>
-      <% } %>
+      </span> 
+      <span class="js-action js-action--edit"<% if (value.indexOf('(') === -1){ %> disabled <% } %>>edit</span>
       <span class="value"><%= value %></span>;
     </li>
   </script>

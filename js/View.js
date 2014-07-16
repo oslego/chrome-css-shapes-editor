@@ -114,6 +114,19 @@
             el.textContent = value;
           },
 
+          updateEditState: function(){
+            var property = data.property,
+                enabled = data.enabled;
+
+            var el = qs('#'+property + ">.js-action--edit");
+
+            if (enabled){
+              el.classList.add('.js-active');
+            } else {
+              el.classList.remove('.js-active');
+            }
+          },
+
           empty: function(){
             self.$properties.innerHTML = '';
           },
@@ -161,6 +174,7 @@
                 property: $parent(target, 'li').id,
                 enabled: !isActive // toggling the state
               });
+
               target.classList.toggle('js-active');
 
             });
@@ -173,7 +187,8 @@
                   property = parent.id,
                   value = target.dataset.shape,
                   createButton = qs('.js-action--create', parent),
-                  editButton = qs('.js-action--edit', parent);
+                  editButton = qs('.js-action--edit', parent),
+                  wasActive = editButton.classList.contains('js-active');
 
               handler({
                 property: property,
@@ -181,9 +196,18 @@
                 enabled: false
               });
 
-              createButton.setAttribute('disabled', true);
               editButton.removeAttribute('disabled');
+
+              // turns on editor if not yet on; turns it off if on, and removes inline editor
               editButton.dispatchEvent(new MouseEvent('click'));
+
+              // toggle editor back on for the new shape
+              // TODO: clarify this worklow ("create new shape while editor is on")
+              if (wasActive){
+                window.setTimeout(function(){
+                    editButton.dispatchEvent(new MouseEvent('click'));
+                }, 0);
+              }
             });
           }
         };
