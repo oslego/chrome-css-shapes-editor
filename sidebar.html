@@ -18,8 +18,11 @@
 
   .properties li{
     white-space: auto;
-    text-overflow: ellipsis;
     padding-left: 30px;
+  }
+
+  .value{
+    line-height: 1.6em;
   }
 
   .property{
@@ -27,16 +30,18 @@
     color: rgb(200, 0, 0);
   }
 
-  .ico{
-    /*width: 1.2em;*/
-    height: 1.2em;
-  }
-
   .js-action{
     display: inline-block;
-    height: 1.2em;
-    background: #d7d7d7;
-    padding: 0.1em 0.2em;
+    margin: 0;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+    padding: 0.1em 0.15em;
+    vertical-align: middle;
+    position: relative;
+  }
+
+  .js-action[disabled]{
+    display: none;
   }
 
   .js-action,
@@ -47,23 +52,40 @@
   }
 
   .js-active{
-    color: white;
-    background: red;
+    background: rgb(255, 220, 80);
   }
 
-  .js-action[disabled]{
-    display: none;
+  .js-action--create{
+    background-image: url(images/icon_2876.svg);
+    background-size: auto 60%;
+    margin: 0 1px 0 0;
+  }
+
+  .js-action--edit{
+    background-image: url(images/icon_39925.svg);
+    background-size: auto 80%;
   }
 
   nav {
+    display: none;
+    position: absolute;
     background: rgb(55, 121, 217);
-    margin-top: 0.8em;
+    top: 1.4em;
+    margin-left: -0.5em;
+    z-index: 2;
+    /* mask for the arrow head tooltip*/
+    -webkit-clip-path: polygon(nonzero, 0 0.8em, 0.6em 0.8em, 1.2em 0.2em, 1.8em 0.8em, 100% 0.8em, 100% 100%, 0px 100%);
+  }
+
+  .js-action--create.js-active > nav{
+    display: flex;
   }
 
   nav a{
     text-decoration: none;
-    padding: 0.5em;
+    padding: 1.4em 0.5em 0.5em;
     color: white;
+    height: 1.2em;
   }
 
   nav a:hover{
@@ -72,28 +94,7 @@
 
   nav :first-child,
   nav :last-child{
-    padding: 0.5em 0.75em;
-  }
-
-  nav::before {
-    content: '';
-	  height: 0;
-  	border-left: 0.8em solid transparent;
-	  border-right: 0.8em solid transparent;
-	  border-bottom: 0.7em solid rgb(55, 121, 217);
-    position: absolute;
-    top: -0.6em;
-    left: 1em;
-  }
-
-  .js-action--create > nav{
-    display: none;
-    position: absolute;
-  }
-
-  .js-action--create.js-active > nav{
-    display: flex;
-    z-index: 2;
+    padding: 1.4em 0.75em 0.5em;
   }
 
   .warning{
@@ -104,6 +105,18 @@
     display: none;
   }
 
+  .ico{
+    width: 1.2em;
+    height: 1.2em;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .ico:not(.js-active):hover{
+    background-color: #eee;
+  }
+
+
 </style>
 </head>
 <body>
@@ -111,14 +124,13 @@
   <script id="template" type="text/x-template">
     <li id="<%= property %>">
       <span class="property"><%= property %></span>:
-      <span class="js-action js-action--create">create
+      <div class="js-action js-action--create ico" title="Create new shape">
         <nav>
-          <a class="ico ico-circle" data-shape="circle()">circle</a>
-          <a class="ico ico-ellipse" data-shape="ellipse()">ellipse</a>
-          <a class="ico ico-polygon" data-shape="polygon()">polygon</a>
+          <a data-shape="circle()">circle</a>
+          <a data-shape="ellipse()">ellipse</a>
+          <a data-shape="polygon()">polygon</a>
         </nav>
-      </span> 
-      <span class="js-action js-action--edit"<% if (value.indexOf('(') === -1){ %> disabled <% } %>>edit</span>
+      </div><div class="js-action js-action--edit ico" title="Edit shape" <% if (value.indexOf('(') === -1){ %> disabled <% } %>></div>
       <span class="value"><%= value %></span>;
     </li>
   </script>

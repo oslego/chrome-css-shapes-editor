@@ -39,3 +39,13 @@ Use with the [CSS Shapes Espresso demo](https://oslego.github.io/css-shapes-espr
 
 - Manually editing code in the _Shapes_ sidebar, like in _Styles_, is not yet available.
 - There is no interactive editor for `inset()` shape function. Only `polygon()`, `circle()` and `ellipse()` are supported.
+
+
+### Credits
+
+- [CSS Shapes Editor library](https://github.com/adobe-webplatform/css-shapes-editor)
+- [Underscore](https://github.com/jashkenas/underscore)
+- helpers & insight from [TodoMVC](https://github.com/tastejs/todomvc)
+- Icons:
+  - [Cursor](http://thenounproject.com/term/cursor/39925/) by Danny Sturgess from The Noun Project
+  - [Plus](http://thenounproject.com/term/plus/2876/) by P.J. Onori from The Noun Project
