@@ -136,7 +136,9 @@
           }
           data[prop] = {
             property: prop,
-            value: style[domProp]
+            value: style[domProp],
+            // TODO: move check to model?
+            editable: /^\s*(polygon|circle|ellipse)\s*\(/.test(style[domProp])
           };
         });
 

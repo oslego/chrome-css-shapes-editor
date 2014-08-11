@@ -130,7 +130,7 @@
           <a data-shape="ellipse()">ellipse</a>
           <a data-shape="polygon()">polygon</a>
         </nav>
-      </div><div class="js-action js-action--edit ico" title="Edit shape" <% if (value.indexOf('(') === -1){ %> disabled <% } %>></div>
+      </div><div class="js-action js-action--edit ico" title="Edit shape" <% if (editable === false){ %> disabled <% } %>></div>
       <span class="value"><%= value %></span>;
     </li>
   </script>
