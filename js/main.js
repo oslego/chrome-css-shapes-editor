@@ -27,8 +27,11 @@
   // extension instance
   var ext;
 
+  // extension key, as published on Chrome web store
+  var key = "nenndldnbcncjmeacmnondmkkfedmgmp";
+
   // messaging port to background page (background.js)
-  var port = chrome.runtime.connect({name: "devtools"});
+  var port = chrome.runtime.connect({name: key + "devtools"});
 
   function Extension(root){
     var self = this;

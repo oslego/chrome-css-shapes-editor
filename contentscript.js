@@ -16,6 +16,9 @@ var port, timeout,
     delay = 100,
     editors = {};
 
+// extension key, as published on Chrome web store
+var key = "nenndldnbcncjmeacmnondmkkfedmgmp";
+
 function setup(el, property, value){
     var options = {},
         editor;
@@ -34,7 +37,7 @@ function setup(el, property, value){
     }
 
     editor = new CSSShapesEditor(el, value, options);
-    port = port || chrome.runtime.connect({name: "page"});
+    port = port || chrome.runtime.connect({name: key + "page"});
 
     function onShapeChange(){
 
