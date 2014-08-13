@@ -6,6 +6,9 @@
   "minimum_chrome_version": "37.0.0",
   "description": "Adds a GUI for editing CSS Shapes values like polygon(), circle() or ellipse()",
   "devtools_page": "devtools.html",
+  "icons": {
+    "128": "images/icon-128-complex.png"
+  },
   "background": {
     "scripts": ["background.js"]
   },
