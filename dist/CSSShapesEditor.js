@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// css-shapes-editor 0.7.0
+// css-shapes-editor 0.8.0
 //
 // Editor for CSS Shapes in the browser.
 //
-// build: 2014-07-16
+// build: 2014-08-25
 
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -1141,7 +1141,8 @@ define('CSSUtils',[],function(){
             'convertToPixels': convertToPixels,
             'convertFromPixels': convertFromPixels,
             'getOriginCoords': getOriginCoords,
-            'getBox': getBox
+            'getBox': getBox,
+            'units': Object.keys(unitConverters)
         };
     }
 
@@ -9841,15 +9842,20 @@ define('PolygonEditor',['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap
         Return a valid polygon CSS Shape value from the current editor's state.
         @example polygon(nonzero, 0 0, 100px 0, ...)
 
+        @param {String} unit Convert all the shape coordinates to the given unit type,
+                             overriding the original input unit types.
+
         @return {String}
     */
-    PolygonEditor.prototype.getCSSValue = function(){
+    PolygonEditor.prototype.getCSSValue = function(unit){
         var offsetTop = this.offsets.top,
             offsetLeft = this.offsets.left,
             element = this.target,
             // @see http://dev.w3.org/csswg/css-shapes/#typedef-fill-rule
             fillRule = this.polygonFillRule,
             refBox = this.refBox || this.defaultRefBox,
+            /*jshint -W004*/ // ignore 'variable already defined' error from jsHint'
+            unit = CSSUtils.units.indexOf(unit > -1) ? unit : null,
             path,
             value;
 
@@ -9861,8 +9867,8 @@ define('PolygonEditor',['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap
             y = Math.ceil(vertex.y - offsetTop);
 
             // turn px value into original units
-            xCoord = CSSUtils.convertFromPixels(x, vertex.xUnit, element, { isHeightRelated: false, boxType: refBox });
-            yCoord = CSSUtils.convertFromPixels(y, vertex.yUnit, element, { isHeightRelated: true, boxType: refBox });
+            xCoord = CSSUtils.convertFromPixels(x, unit || vertex.xUnit, element, { isHeightRelated: false, boxType: refBox });
+            yCoord = CSSUtils.convertFromPixels(y, unit || vertex.yUnit, element, { isHeightRelated: true, boxType: refBox });
 
             // return space-separated pair
             return [xCoord, yCoord].join(' ');
@@ -9877,6 +9883,7 @@ define('PolygonEditor',['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap
 
         return value;
     };
+
 
     /*
         Mutates the vertices array to account for element offsets on the page.
@@ -10436,16 +10443,27 @@ define('CircleEditor',['Editor','CSSUtils', 'snap', 'lodash'], function(Editor, 
         return coords;
     };
 
-    CircleEditor.prototype.getCSSValue = function(){
+    /*
+        Return a valid circle CSS Shape value from the current editor's state.
+        @example circle(50% at 0 0);
+
+        @param {String} unit Convert all the shape coordinates to the given unit type,
+                             overriding the original input unit types.
+
+        @return {String}
+    */
+    CircleEditor.prototype.getCSSValue = function(unit){
         var cx = this.coords.cx - this.offsets.left,
             cy = this.coords.cy - this.offsets.top,
             r = this.coords.r,
             refBox = this.refBox || this.defaultRefBox,
+            /*jshint -W004*/ // ignore 'variable already defined' error from jsHint'
+            unit = CSSUtils.units.indexOf(unit > -1) ? unit : null,
             value;
 
-        cx = CSSUtils.convertFromPixels(cx, this.coords.cxUnit, this.target, { isHeightRelated: false, boxType: refBox });
-        cy = CSSUtils.convertFromPixels(cy, this.coords.cyUnit, this.target, { isHeightRelated: true, boxType: refBox });
-        r = CSSUtils.convertFromPixels(r, this.coords.rUnit, this.target, { isHeightRelated: true, isRadius: true, boxType: refBox });
+        cx = CSSUtils.convertFromPixels(cx, unit || this.coords.cxUnit, this.target, { isHeightRelated: false, boxType: refBox });
+        cy = CSSUtils.convertFromPixels(cy, unit || this.coords.cyUnit, this.target, { isHeightRelated: true, boxType: refBox });
+        r = CSSUtils.convertFromPixels(r, unit || this.coords.rUnit, this.target, { isHeightRelated: true, isRadius: true, boxType: refBox });
 
         value = 'circle(' + [r, 'at', cx, cy].join(' ') + ')';
 
@@ -10768,18 +10786,29 @@ define('EllipseEditor',['Editor','CSSUtils', 'snap', 'lodash'], function(Editor,
         return coords;
     };
 
-    EllipseEditor.prototype.getCSSValue = function(){
+    /*
+        Return a valid ellipse CSS Shape value from the current editor's state.
+        @example ellipse(50% 50% at 0 0);
+
+        @param {String} unit Convert all the shape coordinates to the given unit type,
+                             overriding the original input unit types.
+
+        @return {String}
+    */
+    EllipseEditor.prototype.getCSSValue = function(unit){
         var cx = this.coords.cx - this.offsets.left,
             cy = this.coords.cy - this.offsets.top,
             rx = this.coords.rx,
             ry = this.coords.ry,
             refBox = this.refBox || this.defaultRefBox,
+            /*jshint -W004*/ // ignore 'variable already defined' error from jsHint'
+            unit = CSSUtils.units.indexOf(unit > -1) ? unit : null,
             value;
 
-        cx = CSSUtils.convertFromPixels(cx, this.coords.cxUnit, this.target, { isHeightRelated: false, boxType: refBox });
-        cy = CSSUtils.convertFromPixels(cy, this.coords.cyUnit, this.target, { isHeightRelated: true, boxType: refBox });
-        rx = CSSUtils.convertFromPixels(rx, this.coords.rxUnit, this.target, { isHeightRelated: false, boxType: refBox });
-        ry = CSSUtils.convertFromPixels(ry, this.coords.ryUnit, this.target, { isHeightRelated: true, boxType: refBox });
+        cx = CSSUtils.convertFromPixels(cx, unit || this.coords.cxUnit, this.target, { isHeightRelated: false, boxType: refBox });
+        cy = CSSUtils.convertFromPixels(cy, unit || this.coords.cyUnit, this.target, { isHeightRelated: true, boxType: refBox });
+        rx = CSSUtils.convertFromPixels(rx, unit || this.coords.rxUnit, this.target, { isHeightRelated: false, boxType: refBox });
+        ry = CSSUtils.convertFromPixels(ry, unit || this.coords.ryUnit, this.target, { isHeightRelated: true, boxType: refBox });
 
         value = 'ellipse(' + [rx, ry, 'at', cx, cy].join(' ') + ')';
 

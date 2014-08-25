@@ -337,5 +337,45 @@ function($, markup, EllipseEditor, CSSUtils){
                 expect(editor.transformEditor.bbox).toBeDefined();
             });
         });
+
+        describe('Convert units', function(){
+
+          it('should ignore converting ellipse css shape value if unit type is invalid', function(){
+              var inValue = 'ellipse(400px 200px at 400px 200px)',
+                  expectedValue = 'ellipse(400px 200px at 400px 200px)',
+                  outValue;
+
+              editor = new EllipseEditor(target, inValue);
+              outValue = editor.getCSSValue('bogus-unit');
+
+              expect(outValue).toEqual(expectedValue);
+          });
+
+
+          it('should convert ellipse css shape value from pixels to percentages', function(){
+              var inValue = 'ellipse(400px 200px at 400px 200px)',
+                  expectedValue = 'ellipse(50% 50% at 50% 50%)',
+                  outValue;
+
+              editor = new EllipseEditor(target, inValue);
+              outValue = editor.getCSSValue('%');
+
+              expect(outValue).toEqual(expectedValue);
+          });
+
+          it('should convert ellipse css shape value from percentages to pixels', function(){
+              var inValue = 'ellipse(50% 50% at 50% 50%)',
+                  expectedValue = 'ellipse(400px 200px at 400px 200px)',
+                  outValue;
+
+              editor = new EllipseEditor(target, inValue);
+              outValue = editor.getCSSValue('px');
+
+              expect(outValue).toEqual(expectedValue);
+          });
+
+          /* TODO: test all possible unit-type conversions (px, %, em, rem, pt, etc)*/
+
+        });
     });
 });

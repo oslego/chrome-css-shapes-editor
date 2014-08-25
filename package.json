@@ -2,7 +2,7 @@
   "name": "css-shapes-editor",
   "main": "./dist/CSSShapesEditor.js",
   "description": "Editor for CSS Shapes in the browser.",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "author": "Adobe Systems Inc.",
   "contributors": [
     "Razvan Caliman <rcaliman@adobe.com>",

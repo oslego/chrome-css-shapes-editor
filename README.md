@@ -75,6 +75,14 @@ Get the CSS shape value as a string to use in a stylesheet:
 editor.getCSSValue()
 ```
 
+Get the CSS shape value as a string with coordinates converted to a specific unit type:
+
+```js
+editor.getCSSValue('%')
+// supported values: ["px", "in", "cm", "mm", "pt", "pc", "em", "rem", "vw", "vh", "%"]
+
+```
+
 Programmatically update the shape editor with a new shape value:
 
 ```js
@@ -132,6 +140,7 @@ The work of many people has contributed, both directly and indirectly, to buildi
 
 - [Razvan Caliman](https://github.com/oslego)
 - [Bear Travis](https://github.com/betravis)
+- [François Remy](https://github.com/FremyCompany)
 - [Laurence Mclister](https://github.com/lmclister)
 - [Hans Muller](https://github.com/hansmuller)
 - [Lawrence Hsu](https://github.com/larz0)

@@ -382,15 +382,20 @@ define(['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap.freeTransform',
         Return a valid polygon CSS Shape value from the current editor's state.
         @example polygon(nonzero, 0 0, 100px 0, ...)
 
+        @param {String} unit Convert all the shape coordinates to the given unit type,
+                             overriding the original input unit types.
+
         @return {String}
     */
-    PolygonEditor.prototype.getCSSValue = function(){
+    PolygonEditor.prototype.getCSSValue = function(unit){
         var offsetTop = this.offsets.top,
             offsetLeft = this.offsets.left,
             element = this.target,
             // @see http://dev.w3.org/csswg/css-shapes/#typedef-fill-rule
             fillRule = this.polygonFillRule,
             refBox = this.refBox || this.defaultRefBox,
+            /*jshint -W004*/ // ignore 'variable already defined' error from jsHint'
+            unit = CSSUtils.units.indexOf(unit > -1) ? unit : null,
             path,
             value;
 
@@ -402,8 +407,8 @@ define(['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap.freeTransform',
             y = Math.ceil(vertex.y - offsetTop);
 
             // turn px value into original units
-            xCoord = CSSUtils.convertFromPixels(x, vertex.xUnit, element, { isHeightRelated: false, boxType: refBox });
-            yCoord = CSSUtils.convertFromPixels(y, vertex.yUnit, element, { isHeightRelated: true, boxType: refBox });
+            xCoord = CSSUtils.convertFromPixels(x, unit || vertex.xUnit, element, { isHeightRelated: false, boxType: refBox });
+            yCoord = CSSUtils.convertFromPixels(y, unit || vertex.yUnit, element, { isHeightRelated: true, boxType: refBox });
 
             // return space-separated pair
             return [xCoord, yCoord].join(' ');
@@ -418,6 +423,7 @@ define(['Editor', 'CSSUtils', 'ToolBar', 'lodash', 'snap', 'snap.freeTransform',
 
         return value;
     };
+
 
     /*
         Mutates the vertices array to account for element offsets on the page.
