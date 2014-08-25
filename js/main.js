@@ -131,7 +131,7 @@
                The browser will do its thing, then trigger another chrome.devtools.panels.elements.onSelectionChanged
                event shortly after, and then the computed style object is sane. That's the reason for the second condition.
           */
-          if (!style[domProp] || style[domProp] == ""){
+          if (!style || !style[domProp] || style[domProp] === ""){
             return;
           }
           data[prop] = {
