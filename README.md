@@ -2,7 +2,7 @@
 
 Chrome DevTools extension for live on-screen editing of CSS Shapes property values.
 
-![Screenshot](./screenshot.png)
+![Screenshot](./screenshot.jpg)
 
 ### Demo
 
