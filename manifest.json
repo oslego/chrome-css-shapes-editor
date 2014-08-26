@@ -20,7 +20,7 @@
   ],
   "content_scripts": [{
     "matches": ["<all_urls>"],
-    "js": ["lib/css-shapes-editor/dist/CSSShapesEditor.js","contentscript.js"]
+    "js": ["lib/css-shapes-editor/dist/CSSShapesEditor-min.js","contentscript.js"]
   }],
   "content_security_policy": "script-src 'unsafe-eval' 'self' ; object-src 'self'"
 }
