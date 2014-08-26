@@ -16,8 +16,7 @@
 //
 // Editor for CSS Shapes in the browser.
 //
-// build: 2014-08-25
-
+// build: 2014-08-26
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define(factory);
