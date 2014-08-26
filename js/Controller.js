@@ -50,6 +50,10 @@
 
 	Controller.prototype.onUpdateModel = function(data){
 		this.view.render("updateValue", data);
+
+		if (data.enabled === false){
+			this.view.render("updateEditState", data);
+		}
 	};
 
 	Controller.prototype.onCreateShape = function(editor){

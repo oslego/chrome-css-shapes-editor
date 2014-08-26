@@ -121,9 +121,9 @@
             var el = qs('#'+property + ">.js-action--edit");
 
             if (enabled){
-              el.classList.add('.js-active');
+              el.classList.add('js-active');
             } else {
-              el.classList.remove('.js-active');
+              el.classList.remove('js-active');
             }
           },
 
