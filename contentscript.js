@@ -38,6 +38,7 @@ function setup(el, property, value){
 
     editor = new CSSShapesEditor(el, value, options);
     port = port || chrome.runtime.connect({name: key + "page"});
+    port.onMessage.addListener(handleMessage);
 
     function onShapeChange(){
 
@@ -75,6 +76,32 @@ function remove(property){
     editors[property].off('ready');
     editors[property].remove();
     delete editors[property];
+}
+
+/*
+  Handlers for incoming data to port.onMessage
+
+  @param {Object} msg Data payload from incoming message.
+                      Must have at least a 'type' key with a string value.
+
+  @example handleMessage({type: 'teardown'});
+*/
+function handleMessage(msg){
+  if (!msg.type){
+    return;
+  }
+
+  var handlers = [];
+
+  // `teardown` is called when the user closes DevTools window
+  // use this opportunity to clean-up editors if the user hadn't closed them
+  handlers['teardown'] = function(){
+    Object.keys(editors).forEach(function(property){
+      remove(property);
+    })
+  }
+
+  handlers[msg.type] && handlers[msg.type].call();
 }
 
 document.addEventListener('keyup', function(e){

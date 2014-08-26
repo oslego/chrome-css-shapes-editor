@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /*
-  Relay messages between page content script and devtools extension
+  Relay messages between in-page content script and devtools extension
   because the two are not allowed to communicate to each other.
 */
 
@@ -35,6 +35,11 @@ chrome.runtime.onConnect.addListener(function(port) {
     devtoolsPort = port;
     devtoolsPort.onMessage.addListener(function(data){
       pagePort.postMessage(data);
+    });
+
+    devtoolsPort.onDisconnect.addListener(function(e){
+      // remove any editors existing on the inspected page
+      pagePort.postMessage({type: 'teardown'});
     });
   }
 
