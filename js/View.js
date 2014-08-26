@@ -114,19 +114,6 @@
             el.textContent = value;
           },
 
-          updateEditState: function(){
-            var property = data.property,
-                enabled = data.enabled;
-
-            var el = qs('#'+property + ">.js-action--edit");
-
-            if (enabled){
-              el.classList.add('js-active');
-            } else {
-              el.classList.remove('js-active');
-            }
-          },
-
           empty: function(){
             self.$properties.innerHTML = '';
           },

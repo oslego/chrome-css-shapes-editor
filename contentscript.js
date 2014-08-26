@@ -62,7 +62,7 @@ function setup(el, property, value){
 
     editor.on('shapechange', onShapeChange);
 
-    editor.on('ready', onShapeChange)
+    editor.on('ready', onShapeChange);
 
     editors[property] = editor;
 }
@@ -98,27 +98,8 @@ function handleMessage(msg){
   handlers['teardown'] = function(){
     Object.keys(editors).forEach(function(property){
       remove(property);
-    })
-  }
+    });
+  };
 
   handlers[msg.type] && handlers[msg.type].call();
 }
-
-document.addEventListener('keyup', function(e){
-  var ESC_KEY = 27;
-
-  switch (e.keyCode){
-
-    case ESC_KEY:
-      Object.keys(editors).forEach(function(property){
-        var message = {
-          type: 'remove',
-          property: property
-        };
-
-        port.postMessage(message);
-        remove(property);
-      });
-    break;
-  }
-});
