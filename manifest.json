@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "author": "Razvan Caliman <rcaliman@adobe.com>",
   "minimum_chrome_version": "37.0.0",
-  "description": "Interactive editor for CSS Shapes values.",
+  "description": "Interactive editor for CSS Shapes.",
   "devtools_page": "devtools.html",
   "icons": {
     "128": "images/icon-128-complex.png"
