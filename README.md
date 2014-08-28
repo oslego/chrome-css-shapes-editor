@@ -10,6 +10,11 @@ https://www.youtube.com/watch?v=ZxD44LTKTuQ
 
 ### How to install
 
+__Simple__
+ 1. Open Google Chrome (min version 37, check `chrome://version/`)
+ 2. [Install extension from Chrome Web Store](https://chrome.google.com/webstore/detail/css-shapes-editor/nenndldnbcncjmeacmnondmkkfedmgmp)
+
+__From source__
  1. Clone this repository.
  2. Open Google Chrome (min version 37, check `chrome://version/` or [download Canary](https://www.google.co.uk/intl/en/chrome/browser/canary.html))
    - Navigate to `chrome://extensions`
