@@ -47,6 +47,9 @@
       self.controller.on('editorStateChange', function(editor){
         self.onEditorStateChange.call(self, editor);
       });
+      self.controller.on('convertShape', function(editor){
+        self.convert.call(self, editor);
+      });
       self.controller.setView();
     });
 
@@ -71,6 +74,7 @@
     this.view = null;
     this.model = null;
     this.controller.off('editorStateChange');
+    this.controller.off('convertShape');
     this.controller = null;
 
     chrome.devtools.panels.elements.onSelectionChanged.removeListener(this.boundSelectedElementChange);
@@ -105,6 +109,10 @@
   Extension.prototype.removeEditor = function(editor){
     chrome.devtools.inspectedWindow.eval('remove("'+ editor.property.toString() +'")', { useContentScriptContext: true });
     this.activeEditor = null;
+  };
+
+  Extension.prototype.convert = function(editor){
+    chrome.devtools.inspectedWindow.eval('convert("'+ editor.property.toString() +'")', { useContentScriptContext: true });
   };
 
   /*

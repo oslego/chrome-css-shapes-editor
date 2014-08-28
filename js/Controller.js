@@ -30,6 +30,10 @@
 			self.onToggleEditor(editor.property, editor.enabled);
 		});
 
+		self.view.bind('convertShape', function(editor){
+			self.trigger('convertShape', editor);
+		});
+
 		self.view.bind('createShape', self.onCreateShape.bind(this));
 
 		self.setModel(model);

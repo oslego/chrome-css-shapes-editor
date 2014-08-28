@@ -33,6 +33,7 @@ __From source__
     - an interactive editor appears on top of the selected element
   - click "edit" to turn on editor and adjust an existing shape
   - click "edit" again to remove the editor
+  - **tip**: hold the _Shift_ key and click "edit" to convert the shape coordinate units
 
 
 ### Sample content

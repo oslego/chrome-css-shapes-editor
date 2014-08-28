@@ -14,10 +14,15 @@
 
 var port, timeout,
     delay = 100,
-    editors = {};
+    editors = {},
+    onShapeChange;
 
 // extension key, as published on Chrome web store
 var key = "nenndldnbcncjmeacmnondmkkfedmgmp";
+
+//  unit types for converting shape coordinates
+// `null` causes editor to use original input units
+var units = ["em", "%", "px", "rem", "vw", "vh", "in", "cm", "mm", "pt", "pc", null];
 
 function setup(el, property, value){
     var options = {},
@@ -37,15 +42,22 @@ function setup(el, property, value){
     }
 
     editor = new CSSShapesEditor(el, value, options);
+
+    // copy of varlid targets for unit conversion; will be cycled through and mutated.
+    editor.units = units.slice();
+    // coversion target unit; `null` causes editor to use original input units
+    editor.targetUnit = null;
+
     port = port || chrome.runtime.connect({name: key + "page"});
     port.onMessage.addListener(handleMessage);
 
-    function onShapeChange(){
+    // intentionally expose shape change handler
+    onShapeChange = function onShapeChange(prop){
 
       var message = {
         type: 'update',
         property: property,
-        value: editor.getCSSValue()
+        value: editor.getCSSValue(editor.targetUnit)
       };
 
       editor.target.style[property] = message.value;
@@ -58,7 +70,7 @@ function setup(el, property, value){
           timeout = undefined;
         }, delay);
       }
-    }
+    };
 
     editor.on('shapechange', onShapeChange);
 
@@ -75,7 +87,25 @@ function remove(property){
     editors[property].off('shapechange');
     editors[property].off('ready');
     editors[property].remove();
+    editors[property] = null;
     delete editors[property];
+}
+
+function convert(property){
+    if (!editors[property]){
+      return;
+    }
+
+    var editor = editors[property];
+
+    // set the editor's target output value; used as unit in editor.getCSSValue(unit)
+    editor.targetUnit = editor.units[0];
+
+    // mutate units array; move first index to the end; on next call, units[0] will be current second item
+    editor.units.splice(editor.units.length, 0, editor.units.shift());
+
+    // simulate "shapechange" to sync converted units to DevTools sidebar
+    onShapeChange.call(editor, property);
 }
 
 /*

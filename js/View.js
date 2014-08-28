@@ -152,6 +152,11 @@
               var target = e.target,
                   isActive = target.classList.contains('js-active');
 
+              if (isActive && e.shiftKey){
+                // bail-out; handled by 'convertShape'
+                return;
+              }
+
               // turn off other editors
               if (isActive === false){
                 self.toggleOffActive('.js-action--edit');
@@ -164,6 +169,20 @@
 
               target.classList.toggle('js-active');
 
+            });
+          },
+
+          'convertShape': function(){
+            delegate('.js-action--edit', 'click', function(e){
+              var target = e.target,
+                  isActive = target.classList.contains('js-active');
+
+              if (isActive && e.shiftKey){
+                handler({
+                  property: $parent(target, 'li').id,
+                  enabled: isActive
+                });
+              }
             });
           },
 
