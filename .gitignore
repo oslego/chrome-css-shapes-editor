@@ -1,1 +1,5 @@
 .DS_Store
+lib/css-shapes-editor/*
+!lib/css-shapes-editor/dist/CSSShapesEditor-min.js
+!lib/css-shapes-editor/README.md
+!lib/css-shapes-editor/LICENSE.md
