@@ -1,12 +1,13 @@
 ## CSS Shapes Editor for Chrome DevTools
 
 Chrome DevTools extension for live on-screen editing of CSS Shapes property values.
+Uses the [CSS Shape Editor library](https://github.com/adobe-webplatform/css-shapes-editor).
 
 ![Screenshot](./screenshot.jpg)
 
 ### Demo
 
-https://www.youtube.com/watch?v=ZxD44LTKTuQ
+https://www.youtube.com/watch?v=zdWsBZiGiZc
 
 ### How to install
 
