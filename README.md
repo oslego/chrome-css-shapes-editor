@@ -12,8 +12,15 @@ https://www.youtube.com/watch?v=zdWsBZiGiZc
 ### How to install
 
 __Simple__
+
+*Google Chrome*
  1. Open Google Chrome (min version 37, check `chrome://version/`)
  2. [Install extension from Chrome Web Store](https://chrome.google.com/webstore/detail/css-shapes-editor/nenndldnbcncjmeacmnondmkkfedmgmp)
+
+*Opera browser*
+ 1. Open Opera (min version 24, check `opera://about`)
+ 2. [Install extension from Opera add-ons](https://addons.opera.com/en/extensions/details/css-shapes-editor/) registry.
+
 
 __From source__
  1. Clone this repository.
