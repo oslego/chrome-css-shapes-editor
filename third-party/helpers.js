@@ -101,4 +101,20 @@
 	// Allow for looping on nodes by chaining:
 	// qsa('.foo').forEach(function () {})
 	NodeList.prototype.forEach = Array.prototype.forEach;
+
+	window.extend = function(obj){
+		var arr = [];
+		var each = arr.forEach;
+		var slice = arr.slice;
+
+		each.call(slice.call(arguments, 1), function(source) {
+			if (source) {
+				for (var prop in source) {
+					obj[prop] = source[prop];
+				}
+			}
+		});
+
+		return obj;
+	}
 })(window);

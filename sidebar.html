@@ -121,20 +121,6 @@
 </head>
 <body>
 
-  <script id="template" type="text/x-template">
-    <li id="<%= property %>">
-      <span class="property"><%= property %></span>:
-      <div class="js-action js-action--create ico" title="Create new shape">
-        <nav>
-          <a data-shape="circle()">circle</a>
-          <a data-shape="ellipse()">ellipse</a>
-          <a data-shape="polygon()">polygon</a>
-        </nav>
-      </div><div class="js-action js-action--edit ico" title="Edit shape" <% if (editable === false){ %> disabled <% } %>></div>
-      <span class="value"><%= value %></span>;
-    </li>
-  </script>
-
   <div class="warning js-support">
     It looks like this browser does not support CSS Shapes.<br >
     Learn about <a href="https://github.com/oslego/chrome-css-shapes-editor/wiki/CSS-Shapes-Feature-Support" target="_blank">feature support</a>.

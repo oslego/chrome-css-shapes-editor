@@ -42,7 +42,6 @@
         window.undelegate = function(selector, event, handler){ return _undelegate(selector, event, handler, root);};
 
         this.root = root;
-        this.$template = qs('#template');
         this.$properties = qs('.properties');
         this.$support = qs('.js-support');
 
@@ -93,11 +92,10 @@
         var viewCommands = {
           showProperties: function(){
             var attrs = data,
-                templateText = self.$template.textContent,
                 html = '';
 
             Object.keys(attrs).forEach(function(key){
-              html += _.template(templateText, attrs[key]);
+              html += Handlebars.templates.property(attrs[key]);
             });
 
             self.$properties.innerHTML = html;

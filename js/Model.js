@@ -40,7 +40,7 @@
 	Model.prototype.update = function(id, data, silent){
 		var oldData = this.storage[id] || {};
 
-		this.storage[id] = _.extend(oldData, data);
+		this.storage[id] = window.extend(oldData, data);
 
 		// prevent triggering message?
 		silent = !!silent || false;

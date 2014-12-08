@@ -20,5 +20,5 @@
     "matches": ["<all_urls>"],
     "js": ["lib/css-shapes-editor/dist/CSSShapesEditor-min.js","contentscript.js"]
   }],
-  "content_security_policy": "script-src 'unsafe-eval' 'self' ; object-src 'self'"
+  "content_security_policy": "script-src 'self' ; object-src 'self'"
 }
