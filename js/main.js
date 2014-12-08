@@ -182,6 +182,12 @@
         sidebar.onShown.addListener(function(contentWindow){
           ext = new Extension(contentWindow);
           port.onMessage.addListener(handleMessage);
+
+          // signal to background to inject content scipts
+          port.postMessage({
+            type: "inject",
+            tabId: chrome.devtools.inspectedWindow.tabId,
+          });
         });
 
         sidebar.onHidden.addListener(function(){
@@ -190,6 +196,7 @@
           port.onMessage.removeListener(handleMessage);
         });
     });
+
   });
 
 })();

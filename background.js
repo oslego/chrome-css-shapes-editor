@@ -33,8 +33,16 @@ chrome.runtime.onConnect.addListener(function(port) {
 
   if (port.name == key + "devtools"){
     devtoolsPort = port;
+
     devtoolsPort.onMessage.addListener(function(data){
-      pagePort.postMessage(data);
+
+      if (data.type === "inject"){
+        chrome.tabs.executeScript(data.tabId, {file: './lib/css-shapes-editor/dist/CSSShapesEditor-min.js'});
+        chrome.tabs.executeScript(data.tabId, {file: './contentscript.js'});
+      } else {
+        pagePort.postMessage(data);
+      }
+
     });
 
     devtoolsPort.onDisconnect.addListener(function(e){
@@ -42,5 +50,4 @@ chrome.runtime.onConnect.addListener(function(port) {
       pagePort.postMessage({type: 'teardown'});
     });
   }
-
 });

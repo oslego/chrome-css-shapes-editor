@@ -12,13 +12,6 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "permissions": [
-    "tabs",
-    "activeTab"
-  ],
-  "content_scripts": [{
-    "matches": ["<all_urls>"],
-    "js": ["lib/css-shapes-editor/dist/CSSShapesEditor-min.js","contentscript.js"]
-  }],
+  "permissions": ["<all_urls>"],
   "content_security_policy": "script-src 'self' ; object-src 'self'"
 }
