@@ -1,0 +1,28 @@
+{
+  "name": "chrome-css-shapes-editor",
+  "version": "1.2.0",
+  "description": "Interactive editor for CSS Shapes",
+  "main": "background.js",
+  "scripts": {
+    "build:templates": "handlebars templates/*.handlebars -f js/templates.js",
+    "build": "npm run build:templates"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oslego/chrome-css-shapes-editor.git"
+  },
+  "keywords": [
+    "css",
+    "shapes",
+    "editor"
+  ],
+  "author": "Razvan Caliman <rcaliman@adobe.com>",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/oslego/chrome-css-shapes-editor/issues"
+  },
+  "homepage": "https://github.com/oslego/chrome-css-shapes-editor",
+  "devDependencies": {
+    "handlebars": "^2.0.0"
+  }
+}
