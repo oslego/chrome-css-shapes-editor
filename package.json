@@ -5,7 +5,8 @@
   "main": "background.js",
   "scripts": {
     "build:templates": "handlebars templates/*.handlebars -f js/templates.js",
-    "build": "npm run build:templates"
+    "build": "npm run build:templates",
+    "release": "zip -r chrome-css-shapes-editor.zip . --exclude *.git* node_modules\\* templates\\* update-shapes-editor-lib.sh screenshot.jpg README.md package.json"
   },
   "repository": {
     "type": "git",
