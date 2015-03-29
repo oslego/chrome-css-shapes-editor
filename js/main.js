@@ -83,20 +83,14 @@
   Extension.prototype.onSelectedElementChange = function(){
     var self = this;
 
-    this.ensureDifferentElementSelected()
-      .then(function(){
-        if (self.activeEditor){
-          self.removeEditor(self.activeEditor);
-        }
+    if (this.activeEditor){
+      this.removeEditor(this.activeEditor);
+    }
 
-        self.getSelectedElementStyles().then(function(data){
-          self.controller.setModel(new app.Model(data));
-          self.controller.setView();
-        });
-      })
-      .catch(function(err){
-        console.info("reselecting prev element; stop")
-      })
+    self.getSelectedElementStyles().then(function(data){
+      self.controller.setModel(new app.Model(data));
+      self.controller.setView();
+    });
   };
 
   Extension.prototype.onEditorStateChange = function(editor){
@@ -106,38 +100,6 @@
       this.removeEditor(editor);
     }
   };
-
-  /*
-    Workaround for Chrome 40+ regression in DevTools API where `onSelectionChanged` triggers twice.
-    @see https://code.google.com/p/chromium/issues/detail?id=438267
-
-    Check if the selection change happens consecutively on the same element.
-    Return a promise which resolves if the selection change occurs on different elements as expected,
-    and rejects if the selection change occurs consecutively on the same element which is caused by the regression.
-  */
-  Extension.prototype.ensureDifferentElementSelected = function(){
-    return new Promise(function(resolve, reject){
-
-        function check(role){
-          var marker = 'editor-target';
-
-          // data-role matches, same element is selected
-          if (role == marker){
-            reject();
-          }
-
-          // data-role is undefined, element is not the previously selected one
-          // mark currently selected element ($0), unmark previously selected element ($1)
-          if (role == undefined){
-            chrome.devtools.inspectedWindow.eval('$0.dataset.role="'+ marker.toString() +'"; delete $1.dataset.role', function(){
-              resolve();
-            });
-          }
-        }
-
-        chrome.devtools.inspectedWindow.eval('$0.dataset.role', check);
-    })
-  }
 
   Extension.prototype.setupEditor = function(editor){
     chrome.devtools.inspectedWindow.eval('setup($0, "'+ editor.property.toString() +'", "'+ editor.value.toString() +'")', { useContentScriptContext: true });

@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "CSS Shapes Editor",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "Razvan Caliman <rcaliman@adobe.com>",
   "minimum_chrome_version": "37.0.0",
   "description": "Interactive editor for CSS Shapes.",
